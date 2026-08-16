@@ -24,12 +24,13 @@ export async function getPortfolioData() {
       },
     }));
 
+    // If database query succeeded, use formattedDbProjects directly (even if 0 items when deleted)
     if (!settings) {
       return {
         ...fallbackData,
         name: "Siddhartha Kuchana",
         profileImage: "/profile.jpg",
-        projects: formattedDbProjects.length > 0 ? formattedDbProjects : fallbackData.projects,
+        projects: formattedDbProjects,
       };
     }
 
@@ -44,7 +45,7 @@ export async function getPortfolioData() {
         email: settings.email || fallbackData.socials.email,
         resume: settings.resumeUrl || fallbackData.socials.resume,
       },
-      projects: formattedDbProjects.length > 0 ? formattedDbProjects : fallbackData.projects,
+      projects: formattedDbProjects,
     };
   } catch (error) {
     console.error("Failed to fetch from DB", error);

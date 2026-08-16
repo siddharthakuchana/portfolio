@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
@@ -25,6 +26,11 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         featured: data.featured,
       },
     });
+
+    revalidatePath("/admin/projects");
+    revalidatePath("/");
+    revalidatePath("/", "layout");
+    revalidatePath("/projects");
 
     return NextResponse.json(project);
   } catch (error: any) {

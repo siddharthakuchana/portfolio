@@ -13,6 +13,9 @@ export default async function AdminProjects() {
     const id = formData.get("id") as string;
     await prisma.project.delete({ where: { id } });
     revalidatePath("/admin/projects");
+    revalidatePath("/");
+    revalidatePath("/", "layout");
+    revalidatePath("/projects");
   }
 
   return (
