@@ -83,11 +83,6 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
             {portfolioData.role || "AI & ML Undergraduate"}
           </p>
 
-          <div className="mt-4 pt-4 border-t border-border-color/50 text-center w-full">
-            <p className="text-[11px] text-text-muted">
-              Add your photo file as <code className="text-accent bg-accent/10 px-1.5 py-0.5 rounded">public/profile.jpg</code> to replace this display.
-            </p>
-          </div>
         </motion.div>
       </div>
     </AnimatePresence>
