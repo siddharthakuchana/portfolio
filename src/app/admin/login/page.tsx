@@ -4,6 +4,8 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import Link from "next/link";
+import { ArrowLeft, Lock } from "lucide-react";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -47,10 +49,13 @@ export default function AdminLogin() {
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent to-blue-600" />
         
         <div className="text-center mb-8">
+          <div className="inline-flex p-3 bg-accent/10 text-accent rounded-2xl mb-3">
+            <Lock size={24} />
+          </div>
           <h1 className="text-2xl font-bold tracking-tighter text-foreground">
             PORTFOLIO<span className="text-accent">CMS</span>
           </h1>
-          <p className="text-sm text-text-muted mt-2">Sign in to manage your portfolio</p>
+          <p className="text-sm text-text-muted mt-1">Sign in to manage your portfolio</p>
         </div>
 
         {error && (
@@ -87,11 +92,21 @@ export default function AdminLogin() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-foreground text-background font-medium rounded-lg px-6 py-3 flex items-center justify-center space-x-2 hover:bg-white/90 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full bg-accent text-background font-semibold rounded-lg px-6 py-3 flex items-center justify-center space-x-2 hover:bg-accent/90 transition-colors disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
           >
-            {isLoading ? "Signing in..." : "Sign in"}
+            {isLoading ? "Signing in..." : "Sign in to Dashboard"}
           </button>
         </form>
+
+        <div className="mt-8 pt-6 border-t border-border-color/50 text-center">
+          <Link 
+            href="/" 
+            className="inline-flex items-center space-x-2 text-sm text-text-muted hover:text-accent transition-colors font-medium"
+          >
+            <ArrowLeft size={16} />
+            <span>Back to Public Portfolio</span>
+          </Link>
+        </div>
       </motion.div>
     </div>
   );
