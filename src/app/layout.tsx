@@ -23,8 +23,8 @@ const geistMono = Geist_Mono({
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "AI/ML Developer Portfolio",
-  description: "Premium portfolio showcasing AI systems and software engineering.",
+  title: "Siddhartha Kuchana | Portfolio",
+  description: "Official portfolio of Siddhartha Kuchana — AI & ML Engineer and Full-Stack Developer.",
 };
 
 export default async function RootLayout({
