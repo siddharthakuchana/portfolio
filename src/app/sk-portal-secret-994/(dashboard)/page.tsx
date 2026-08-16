@@ -3,20 +3,29 @@ import { Users, FileText, Briefcase, Code, BarChart } from "lucide-react";
 import Link from "next/link";
 
 export default async function AdminDashboard() {
-  const projectCount = await prisma.project.count();
-  const publishedProjects = await prisma.project.count({ where: { status: "PUBLISHED" } });
-  
-  const techCount = await prisma.technology.count();
-  const blogCount = await prisma.blogPost.count();
-  const publishedBlogs = await prisma.blogPost.count({ where: { status: "PUBLISHED" } });
-  
-  const mediaCount = await prisma.media.count();
+  let projectCount = 0;
+  let publishedProjects = 0;
+  let techCount = 0;
+  let blogCount = 0;
+  let publishedBlogs = 0;
+  let mediaCount = 0;
+
+  try {
+    projectCount = await prisma.project.count().catch(() => 0);
+    publishedProjects = await prisma.project.count({ where: { status: "PUBLISHED" } }).catch(() => 0);
+    techCount = await prisma.technology.count().catch(() => 0);
+    blogCount = await prisma.blogPost.count().catch(() => 0);
+    publishedBlogs = await prisma.blogPost.count({ where: { status: "PUBLISHED" } }).catch(() => 0);
+    mediaCount = await prisma.media.count().catch(() => 0);
+  } catch (err) {
+    console.error("Error fetching stats:", err);
+  }
 
   const stats = [
-    { title: "Total Projects", value: projectCount, subValue: `${publishedProjects} published`, icon: Briefcase, color: "text-blue-500", href: "/admin/projects" },
-    { title: "Technologies", value: techCount, subValue: "Active stack", icon: Code, color: "text-purple-500", href: "/admin/technologies" },
-    { title: "Blog Posts", value: blogCount, subValue: `${publishedBlogs} published`, icon: FileText, color: "text-green-500", href: "/admin/blog" },
-    { title: "Media Files", value: mediaCount, subValue: "Uploads", icon: BarChart, color: "text-orange-500", href: "/admin/media" },
+    { title: "Total Projects", value: projectCount, subValue: `${publishedProjects} published`, icon: Briefcase, color: "text-blue-500", href: "/sk-portal-secret-994/projects" },
+    { title: "Technologies", value: techCount, subValue: "Active stack", icon: Code, color: "text-purple-500", href: "/sk-portal-secret-994/technologies" },
+    { title: "Blog Posts", value: blogCount, subValue: `${publishedBlogs} published`, icon: FileText, color: "text-green-500", href: "/sk-portal-secret-994/blog" },
+    { title: "Media Files", value: mediaCount, subValue: "Uploads", icon: BarChart, color: "text-orange-500", href: "/sk-portal-secret-994/media" },
   ];
 
   return (
@@ -53,16 +62,16 @@ export default async function AdminDashboard() {
       <div className="mt-8 bg-surface border border-border-color rounded-xl p-6">
         <h2 className="text-xl font-bold text-foreground mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-4">
-          <Link href="/admin/projects/new" className="px-4 py-2 bg-background border border-border-color rounded-lg text-sm font-medium hover:border-accent hover:text-accent transition-colors">
+          <Link href="/sk-portal-secret-994/projects/new" className="px-4 py-2 bg-background border border-border-color rounded-lg text-sm font-medium hover:border-accent hover:text-accent transition-colors">
             + New Project
           </Link>
-          <Link href="/admin/blog/new" className="px-4 py-2 bg-background border border-border-color rounded-lg text-sm font-medium hover:border-accent hover:text-accent transition-colors">
+          <Link href="/sk-portal-secret-994/blog/new" className="px-4 py-2 bg-background border border-border-color rounded-lg text-sm font-medium hover:border-accent hover:text-accent transition-colors">
             + Write Blog Post
           </Link>
-          <Link href="/admin/technologies/new" className="px-4 py-2 bg-background border border-border-color rounded-lg text-sm font-medium hover:border-accent hover:text-accent transition-colors">
+          <Link href="/sk-portal-secret-994/technologies/new" className="px-4 py-2 bg-background border border-border-color rounded-lg text-sm font-medium hover:border-accent hover:text-accent transition-colors">
             + Add Technology
           </Link>
-          <Link href="/admin/settings" className="px-4 py-2 bg-background border border-border-color rounded-lg text-sm font-medium hover:border-accent hover:text-accent transition-colors">
+          <Link href="/sk-portal-secret-994/settings" className="px-4 py-2 bg-background border border-border-color rounded-lg text-sm font-medium hover:border-accent hover:text-accent transition-colors">
             Update Profile
           </Link>
         </div>

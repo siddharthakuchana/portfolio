@@ -60,7 +60,7 @@ I enjoy turning complex technical problems into practical and reliable software.
         "Exercise guidance",
         "Gamified experience",
       ],
-      githubLink: "https://github.com/[USERNAME]/alignwell",
+      githubLink: "https://github.com/siddharthakuchana/alignwell",
       liveLink: "",
       visual: "alignwell",
       caseStudy: {
@@ -88,7 +88,7 @@ I enjoy turning complex technical problems into practical and reliable software.
         "Excel export",
         "Browser automation",
       ],
-      githubLink: "https://github.com/[USERNAME]/autoresultx",
+      githubLink: "https://github.com/siddharthakuchana/autoresultx",
       liveLink: "",
       visual: "autoresultx",
       caseStudy: {
@@ -127,7 +127,7 @@ I enjoy turning complex technical problems into practical and reliable software.
         "Authentication",
         "Personalized suggestions",
       ],
-      githubLink: "https://github.com/[USERNAME]/career-guidance",
+      githubLink: "https://github.com/siddharthakuchana/career-guidance",
       liveLink: "",
       visual: "career-guidance",
       caseStudy: {
@@ -186,9 +186,9 @@ I enjoy turning complex technical problems into practical and reliable software.
     "Generative AI",
   ],
   socials: {
-    github: "https://github.com/[USERNAME]",
-    linkedin: "https://linkedin.com/in/[USERNAME]",
-    email: "[EMAIL]",
+    github: "https://github.com/siddharthakuchana",
+    linkedin: "https://linkedin.com/in/siddharthakuchana",
+    email: "siddharthakuchana@gmail.com",
     resume: "/resume.pdf",
   },
 };

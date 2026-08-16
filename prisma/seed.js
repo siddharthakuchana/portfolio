@@ -9,7 +9,7 @@ const projects = [
     category: "Computer Vision / AI / Fitness",
     summary: "An AI-powered exercise posture correction system that analyzes body posture using computer vision and provides real-time feedback to help users perform exercises with proper form.",
     content: "### AlignWell\n\nAn AI-powered exercise posture correction system using MediaPipe and OpenCV.",
-    githubUrl: "https://github.com/USERNAME/alignwell",
+    githubUrl: "https://github.com/siddharthakuchana/alignwell",
     liveUrl: "",
     year: 2025,
     order: 1
@@ -19,7 +19,7 @@ const projects = [
     category: "Automation / Python / Selenium",
     summary: "An automation system designed to extract university results from dynamic web portals without manually entering every roll number.",
     content: "### AutoResultX\n\nAutomated extraction tool for bulk result data into Excel formats.",
-    githubUrl: "https://github.com/USERNAME/autoresultx",
+    githubUrl: "https://github.com/siddharthakuchana/autoresultx",
     liveUrl: "",
     year: 2025,
     order: 2
@@ -29,7 +29,7 @@ const projects = [
     category: "AI / Machine Learning / Full Stack",
     summary: "A web-based career guidance platform that uses machine learning to recommend suitable career paths based on user skills and interests.",
     content: "### Career Guidance System\n\nML-powered career prediction platform.",
-    githubUrl: "https://github.com/USERNAME/career-guidance",
+    githubUrl: "https://github.com/siddharthakuchana/career-guidance",
     liveUrl: "",
     year: 2025,
     order: 3
@@ -66,15 +66,18 @@ async function main() {
     update: {
       name: "Siddhartha Kuchana",
       displayName: "Siddhartha Kuchana",
+      github: "https://github.com/siddharthakuchana",
+      linkedin: "https://linkedin.com/in/siddharthakuchana",
+      email: "siddharthakuchana@gmail.com",
     },
     create: {
       id: "singleton",
       name: "Siddhartha Kuchana",
       displayName: "Siddhartha Kuchana",
       role: "AI & ML Undergraduate | Full-Stack Developer | AI Engineer",
-      email: "siddhartha@example.com",
-      github: "https://github.com",
-      linkedin: "https://linkedin.com",
+      email: "siddharthakuchana@gmail.com",
+      github: "https://github.com/siddharthakuchana",
+      linkedin: "https://linkedin.com/in/siddharthakuchana",
       resumeUrl: "/resume.pdf",
       footerText: "© 2026 Siddhartha Kuchana. All rights reserved.",
     },
