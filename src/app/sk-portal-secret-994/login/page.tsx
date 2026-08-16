@@ -29,7 +29,7 @@ export default function AdminLogin() {
       if (res?.error) {
         setError("Invalid email or password");
       } else {
-        router.push("/admin");
+        router.push("/sk-portal-secret-994");
         router.refresh();
       }
     } catch (err) {

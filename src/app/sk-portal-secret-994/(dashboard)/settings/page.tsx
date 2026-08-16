@@ -9,7 +9,7 @@ export default async function SettingsPage() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect("/admin/login");
+    redirect("/sk-portal-secret-994/login");
   }
 
   const settings = await prisma.siteSettings.findUnique({

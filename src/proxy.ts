@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 
 export default withAuth(
   function middleware(req) {
-    // Optional: Add custom logic here
     return NextResponse.next();
   },
   {
@@ -14,5 +13,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/admin/((?!login).*)"],
+  matcher: ["/sk-portal-secret-994/((?!login).*)"],
 };

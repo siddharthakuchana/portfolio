@@ -22,21 +22,21 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   const links = [
-    { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/admin/projects", label: "Projects", icon: FolderKanban },
-    { href: "/admin/technologies", label: "Technologies", icon: Terminal },
-    { href: "/admin/blog", label: "Blog", icon: FileText },
-    { href: "/admin/achievements", label: "Achievements", icon: Award },
-    { href: "/admin/media", label: "Media Library", icon: ImageIcon },
-    { href: "/admin/messages", label: "Messages", icon: MessageSquare },
-    { href: "/admin/homepage", label: "Homepage CMS", icon: Layers },
-    { href: "/admin/settings", label: "Settings", icon: Settings },
+    { href: "/sk-portal-secret-994", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/sk-portal-secret-994/projects", label: "Projects", icon: FolderKanban },
+    { href: "/sk-portal-secret-994/technologies", label: "Technologies", icon: Terminal },
+    { href: "/sk-portal-secret-994/blog", label: "Blog", icon: FileText },
+    { href: "/sk-portal-secret-994/achievements", label: "Achievements", icon: Award },
+    { href: "/sk-portal-secret-994/media", label: "Media Library", icon: ImageIcon },
+    { href: "/sk-portal-secret-994/messages", label: "Messages", icon: MessageSquare },
+    { href: "/sk-portal-secret-994/homepage", label: "Homepage CMS", icon: Layers },
+    { href: "/sk-portal-secret-994/settings", label: "Settings", icon: Settings },
   ];
 
   return (
     <aside className="w-64 bg-surface border-r border-border-color h-full flex flex-col z-50">
       <div className="p-6 border-b border-border-color flex items-center justify-between">
-        <Link href="/admin" className="text-xl font-bold tracking-tighter">
+        <Link href="/sk-portal-secret-994" className="text-xl font-bold tracking-tighter">
           PORTFOLIO<span className="text-accent">CMS</span>
         </Link>
         <Link
@@ -80,7 +80,7 @@ export default function AdminSidebar() {
 
       <div className="p-4 border-t border-border-color">
         <button
-          onClick={() => signOut({ callbackUrl: "/admin/login" })}
+          onClick={() => signOut({ callbackUrl: "/sk-portal-secret-994/login" })}
           className="flex w-full items-center space-x-3 px-3 py-2.5 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer font-medium"
         >
           <LogOut size={18} />

@@ -1,9 +1,8 @@
 "use client";
 
 import { usePortfolioData } from "@/components/providers/PortfolioProvider";
-import { Mail, Lock } from "lucide-react";
+import { Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/Icons";
-import Link from "next/link";
 
 export default function Footer() {
   const portfolioData = usePortfolioData();
@@ -57,14 +56,6 @@ export default function Footer() {
         <div className="flex items-center space-x-6 mt-4 md:mt-0 text-xs text-text-muted">
           <a href="#" className="hover:text-accent transition-colors">Privacy Policy</a>
           <a href="#" className="hover:text-accent transition-colors">Terms of Service</a>
-          <Link
-            href="/admin"
-            className="flex items-center space-x-1.5 px-3 py-1 bg-background border border-border-color hover:border-accent hover:text-accent rounded-full transition-all text-xs font-mono group"
-            title="Access Admin CMS Portal"
-          >
-            <Lock size={12} className="group-hover:text-accent transition-colors" />
-            <span>Admin Portal</span>
-          </Link>
         </div>
       </div>
     </footer>
