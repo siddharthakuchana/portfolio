@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, User } from "lucide-react";
+import { X, User, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { usePortfolioData } from "@/components/providers/PortfolioProvider";
 
@@ -12,8 +13,11 @@ interface ProfileModalProps {
 
 export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   const portfolioData = usePortfolioData();
+  const [imageError, setImageError] = useState(false);
 
   if (!isOpen) return null;
+
+  const profileImg = portfolioData.profileImage || "/profile.jpg";
 
   return (
     <AnimatePresence>
@@ -43,36 +47,47 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
             <X size={20} />
           </button>
 
-          {/* Circular Photo */}
-          <div className="relative w-44 h-44 rounded-full p-1.5 bg-gradient-to-tr from-accent via-blue-500 to-purple-600 shadow-xl mb-6">
+          {/* Circular Photo Frame */}
+          <div className="relative w-44 h-44 rounded-full p-1.5 bg-gradient-to-tr from-accent via-blue-500 to-purple-600 shadow-xl mb-6 group">
             <div className="w-full h-full rounded-full overflow-hidden bg-background flex items-center justify-center relative">
-              {portfolioData.profileImage ? (
+              {!imageError ? (
                 <Image
-                  src={portfolioData.profileImage}
-                  alt={portfolioData.name || "Profile Photo"}
+                  src={profileImg}
+                  alt={portfolioData.name || "Siddhartha Kuchana"}
                   fill
+                  sizes="176px"
                   className="object-cover"
+                  onError={() => setImageError(true)}
                 />
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center bg-surface-hover text-accent">
-                  <User size={64} className="mb-2" />
-                  <span className="text-xs font-mono font-medium tracking-wider text-text-muted uppercase">
-                    {portfolioData.name || "Siddhartha"}
+                <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-accent/20 to-blue-900/40 text-foreground p-4 text-center">
+                  <div className="w-16 h-16 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center mb-2 text-accent font-mono text-2xl font-bold">
+                    SK
+                  </div>
+                  <span className="text-xs font-mono text-text-muted">
+                    Siddhartha Kuchana
                   </span>
                 </div>
               )}
             </div>
           </div>
 
-          <h3 className="text-xl font-bold text-foreground tracking-tight text-center">
-            {portfolioData.name || "Siddhartha Kuchana"}
-          </h3>
-          <p className="text-xs text-accent font-mono uppercase tracking-widest mt-1 text-center">
-            {portfolioData.role || "AI & ML Engineer"}
+          <div className="flex items-center space-x-1.5 mb-1">
+            <h3 className="text-xl font-bold text-foreground tracking-tight text-center">
+              {portfolioData.name || "Siddhartha Kuchana"}
+            </h3>
+            <Sparkles size={16} className="text-accent" />
+          </div>
+
+          <p className="text-xs text-accent font-mono uppercase tracking-widest text-center">
+            {portfolioData.role || "AI & ML Undergraduate"}
           </p>
-          <p className="text-xs text-text-muted mt-3 text-center">
-            Double-click triggered photo preview
-          </p>
+
+          <div className="mt-4 pt-4 border-t border-border-color/50 text-center w-full">
+            <p className="text-[11px] text-text-muted">
+              Add your photo file as <code className="text-accent bg-accent/10 px-1.5 py-0.5 rounded">public/profile.jpg</code> to replace this display.
+            </p>
+          </div>
         </motion.div>
       </div>
     </AnimatePresence>
