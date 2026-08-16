@@ -33,21 +33,20 @@ const projects = [
     liveUrl: "",
     year: 2025,
     order: 3
-  },
-  {
-    title: "AI-Powered Answer Evaluation System",
-    category: "NLP / AI / Backend",
-    summary: "An AI-based system designed to evaluate descriptive student answers using semantic similarity and vector embeddings.",
-    content: "### AI-Powered Answer Evaluation System\n\nEvaluates student answers using Sentence Transformers and Pinecone.",
-    githubUrl: "https://github.com/USERNAME/ai-answer-evaluation",
-    liveUrl: "",
-    year: 2025,
-    order: 4
   }
 ];
 
 async function main() {
   console.log("Seeding database...");
+
+  // Remove unwanted projects if they exist
+  await prisma.project.deleteMany({
+    where: {
+      slug: {
+        in: ["ai-powered-answer-evaluation-system", "ai-powered-answer-evaluation"]
+      }
+    }
+  });
 
   // 1. Seed Admin
   const hashedPassword = await bcrypt.hash("password123", 10);
@@ -112,7 +111,7 @@ async function main() {
     });
   }
 
-  console.log("Database seeded successfully with 4 projects!");
+  console.log("Database seeded successfully with 3 projects!");
 }
 
 main()
