@@ -141,41 +141,6 @@ I enjoy turning complex technical problems into practical and reliable software.
           "An accurate prediction engine providing actionable roadmaps for paths like Data Scientist and AI/ML Specialist.",
       },
     },
-    {
-      title: "AI-Powered Answer Evaluation System",
-      category: "NLP / AI / Backend",
-      description:
-        "An AI-based system designed to evaluate descriptive student answers using semantic similarity and vector embeddings.",
-      techStack: [
-        "FastAPI",
-        "Sentence Transformers",
-        "Pinecone",
-        "TiDB",
-        "SQLAlchemy",
-        "PyMySQL",
-      ],
-      features: [
-        "Question management",
-        "Answer embedding",
-        "Vector similarity",
-        "Automated evaluation",
-        "Professor portal",
-        "Score generation",
-      ],
-      githubLink: "https://github.com/[USERNAME]/ai-answer-evaluation",
-      liveLink: "",
-      visual: "answer-evaluation",
-      caseStudy: {
-        problem:
-          "Manual evaluation of descriptive answers is subjective and time-intensive for professors.",
-        approach:
-          "Implemented semantic similarity using Sentence Transformers and Pinecone vector database instead of simple keyword matching.",
-        challenges:
-          "Tuning the similarity threshold and integrating TiDB for relational data with Pinecone for vector search.",
-        result:
-          "A robust evaluation system that accurately scores answers based on their semantic meaning, reducing grading time.",
-      },
-    },
   ],
   achievements: [
     "Pursuing B.Tech CSE (AI & ML) at JNTUH with a CGPA of 8.26",
