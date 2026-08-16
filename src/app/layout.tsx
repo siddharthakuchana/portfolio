@@ -1,0 +1,56 @@
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import SmoothScrolling from "@/components/SmoothScrolling";
+import CustomCursor from "@/components/ui/CustomCursor";
+import { AuthProvider } from "@/components/providers/AuthProvider";
+import { PortfolioProvider } from "@/components/providers/PortfolioProvider";
+import CommandPalette from "@/components/ui/CommandPalette";
+import { getPortfolioData } from "@/lib/dataFetcher";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const revalidate = 0;
+
+export const metadata: Metadata = {
+  title: "AI/ML Developer Portfolio",
+  description: "Premium portfolio showcasing AI systems and software engineering.",
+};
+
+export default async function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const data = await getPortfolioData();
+
+  return (
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} dark`}>
+      <body className="font-sans antialiased bg-background text-foreground selection:bg-accent/30 min-h-screen flex flex-col">
+        <AuthProvider>
+          <PortfolioProvider data={data}>
+            <SmoothScrolling>
+            <CustomCursor />
+            <CommandPalette />
+            <Navbar />
+            <main className="min-h-screen pt-20">
+              {children}
+            </main>
+            <Footer />
+          </SmoothScrolling>
+          </PortfolioProvider>
+        </AuthProvider>
+      </body>
+    </html>
+  );
+}
