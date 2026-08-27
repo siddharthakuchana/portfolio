@@ -189,6 +189,6 @@ I enjoy turning complex technical problems into practical and reliable software.
     github: "https://github.com/siddharthakuchana",
     linkedin: "https://linkedin.com/in/siddharthakuchana",
     email: "siddharthakuchana@gmail.com",
-    resume: "/resume.pdf",
+    resume: "/resume",
   },
 };

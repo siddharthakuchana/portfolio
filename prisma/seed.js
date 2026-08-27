@@ -89,7 +89,7 @@ async function main() {
       email: "siddharthakuchana0207@gmail.com",
       github: "https://github.com/siddharthakuchana",
       linkedin: "https://linkedin.com/in/siddharthakuchana",
-      resumeUrl: "/resume.pdf",
+      resumeUrl: "/resume",
       footerText: "© 2026 Siddhartha Kuchana. All rights reserved.",
     },
   });
