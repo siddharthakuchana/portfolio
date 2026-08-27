@@ -110,7 +110,7 @@ export default function ProfileDropdown({ onOpenPhotoModal }: ProfileDropdownPro
                   <GraduationCap className="w-3 h-3 text-accent" />
                   <span>CGPA</span>
                 </div>
-                <span className="text-sm font-bold text-foreground font-mono">9.4 / 10</span>
+                <span className="text-sm font-bold text-foreground font-mono">8.41 / 10</span>
               </div>
               <div className="p-2.5 rounded-xl bg-background/60 border border-border-color/50">
                 <div className="flex items-center gap-1.5 text-[10px] text-text-muted font-mono mb-1">

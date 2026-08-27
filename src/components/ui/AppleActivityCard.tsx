@@ -42,15 +42,15 @@ const defaultRings: RingData[] = [
     color: "#30d158",
     glowColor: "rgba(48, 209, 88, 0.4)",
     icon: <Code2 className="w-4 h-4 text-[#30d158]" />,
-    detail: "350+ Problems",
+    detail: "200+ Problems Solved",
   },
   {
     label: "Academic Score",
-    value: 94,
+    value: 84,
     color: "#00d2ff",
     glowColor: "rgba(0, 210, 255, 0.4)",
     icon: <GraduationCap className="w-4 h-4 text-[#00d2ff]" />,
-    detail: "9.4 CGPA (Distinction)",
+    detail: "8.41 CGPA (Distinction)",
   },
 ];
 
@@ -75,7 +75,7 @@ export default function AppleActivityCard({
       <div className="flex items-center justify-between mb-6">
         <div>
           <span className="text-xs font-mono text-accent uppercase tracking-wider">
-            Apple Activity Rings
+            Performance Overview
           </span>
           <h3 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-2">
             Activity Metrics

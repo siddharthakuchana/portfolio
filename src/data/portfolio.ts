@@ -143,7 +143,7 @@ I enjoy turning complex technical problems into practical and reliable software.
     },
   ],
   achievements: [
-    "Pursuing B.Tech CSE (AI & ML) at JNTUH with a CGPA of 8.26",
+    "Pursuing B.Tech CSE (AI & ML) at JNTUH with a CGPA of 8.41",
     "Developed multiple end-to-end full-stack applications",
     "Built robust AI/ML models and deployed them in practical systems",
     "Created complex automation tools for web data extraction",

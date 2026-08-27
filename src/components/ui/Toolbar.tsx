@@ -55,7 +55,7 @@ export default function Toolbar() {
       label: "CGPA & Marks breakdown",
       icon: <GraduationCap className="w-4 h-4 text-emerald-400" />,
       onClick: () => setIsCgpaModalOpen(true),
-      badge: "8.4",
+      badge: "8.41",
     },
     {
       id: "resume",
