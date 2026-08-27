@@ -10,11 +10,6 @@ export const revalidate = 0;
 // GET: Fetch all messages for real-time polling
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const messages = await prisma.contactMessage.findMany({
       orderBy: { createdAt: "desc" },
     });
