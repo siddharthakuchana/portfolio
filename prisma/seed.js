@@ -48,11 +48,13 @@ const projects = [
 
 async function main() {
   console.log("Seeding database...");
-  try {
-    await prisma.$queryRawUnsafe("PRAGMA journal_mode = WAL;");
-    await prisma.$queryRawUnsafe("PRAGMA busy_timeout = 5000;");
-  } catch (pragErr) {
-    console.warn("Could not set PRAGMA journal_mode:", pragErr);
+  if (process.env.DATABASE_URL?.includes("dev.db") || process.env.DATABASE_URL?.startsWith("file:")) {
+    try {
+      await prisma.$queryRawUnsafe("PRAGMA journal_mode = WAL;");
+      await prisma.$queryRawUnsafe("PRAGMA busy_timeout = 5000;");
+    } catch (pragErr) {
+      // Ignored for non-sqlite
+    }
   }
 
   // Remove unwanted projects if they exist
