@@ -1,4 +1,11 @@
 import { PrismaClient } from "@prisma/client";
+import path from "path";
+
+// Resolve absolute path to SQLite database to prevent Error Code 14 (Unable to open database file) in Next.js
+if (!process.env.DATABASE_URL || process.env.DATABASE_URL.includes("dev.db")) {
+  const dbPath = path.join(process.cwd(), "prisma", "dev.db");
+  process.env.DATABASE_URL = `file:${dbPath}`;
+}
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
@@ -9,3 +16,4 @@ export const prisma =
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
