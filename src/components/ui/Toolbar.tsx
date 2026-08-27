@@ -13,6 +13,7 @@ import {
 import { GithubIcon, LinkedinIcon } from "@/components/ui/Icons";
 import { usePortfolioData } from "@/components/providers/PortfolioProvider";
 import CgpaModal from "./CgpaModal";
+import ResumeModal from "./ResumeModal";
 import SwitchButton from "./SwitchButton";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,7 @@ export default function Toolbar() {
   const portfolioData = usePortfolioData();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [isCgpaModalOpen, setIsCgpaModalOpen] = useState(false);
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   const [isAvailable, setIsAvailable] = useState(true);
 
   // Trigger search palette by keyboard dispatching custom event or standard shortcut
@@ -53,7 +55,14 @@ export default function Toolbar() {
       label: "CGPA & Marks breakdown",
       icon: <GraduationCap className="w-4 h-4 text-emerald-400" />,
       onClick: () => setIsCgpaModalOpen(true),
-      badge: "9.4",
+      badge: "8.4",
+    },
+    {
+      id: "resume",
+      label: "View / Print Full Resume",
+      icon: <FileText className="w-4 h-4 text-amber-400" />,
+      onClick: () => setIsResumeModalOpen(true),
+      badge: "CV",
     },
     {
       id: "contact",
@@ -72,12 +81,6 @@ export default function Toolbar() {
       label: "LinkedIn Profile",
       icon: <LinkedinIcon width={16} height={16} className="text-blue-400" />,
       href: portfolioData.socials.linkedin,
-    },
-    {
-      id: "resume",
-      label: "View Resume PDF",
-      icon: <FileText className="w-4 h-4 text-amber-400" />,
-      href: portfolioData.socials.resume,
     },
   ];
 
@@ -157,8 +160,9 @@ export default function Toolbar() {
         </div>
       </aside>
 
-      {/* CGPA Modal popup */}
+      {/* CGPA & Resume Modals */}
       <CgpaModal isOpen={isCgpaModalOpen} onClose={() => setIsCgpaModalOpen(false)} />
+      <ResumeModal isOpen={isResumeModalOpen} onClose={() => setIsResumeModalOpen(false)} />
     </>
   );
 }
