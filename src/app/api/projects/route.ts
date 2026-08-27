@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       },
     });
 
-    revalidatePath("/admin/projects");
+    revalidatePath("/sk-portal-secret-994/projects");
     revalidatePath("/");
     revalidatePath("/", "layout");
     revalidatePath("/projects");

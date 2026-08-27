@@ -27,7 +27,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       },
     });
 
-    revalidatePath("/admin/projects");
+    revalidatePath("/sk-portal-secret-994/projects");
     revalidatePath("/");
     revalidatePath("/", "layout");
     revalidatePath("/projects");
