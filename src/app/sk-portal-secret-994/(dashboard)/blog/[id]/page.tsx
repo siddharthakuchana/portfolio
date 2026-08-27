@@ -13,7 +13,7 @@ export default async function EditBlogPostPage({ params }: { params: Promise<{ i
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center space-x-4">
-        <Link href="/admin/blog" className="p-2 hover:bg-surface rounded-full text-text-muted hover:text-foreground transition-colors">
+        <Link href="/sk-portal-secret-994/blog" className="p-2 hover:bg-surface rounded-full text-text-muted hover:text-foreground transition-colors">
           <ArrowLeft size={20} />
         </Link>
         <div>

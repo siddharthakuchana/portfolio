@@ -12,7 +12,7 @@ export default async function AdminProjects() {
     "use server";
     const id = formData.get("id") as string;
     await prisma.project.delete({ where: { id } });
-    revalidatePath("/admin/projects");
+    revalidatePath("/sk-portal-secret-994/projects");
     revalidatePath("/");
     revalidatePath("/", "layout");
     revalidatePath("/projects");
@@ -26,7 +26,7 @@ export default async function AdminProjects() {
           <p className="text-text-muted mt-1">Manage your portfolio projects.</p>
         </div>
         <Link
-          href="/admin/projects/new"
+          href="/sk-portal-secret-994/projects/new"
           className="flex items-center space-x-2 bg-accent text-background px-4 py-2 rounded-lg font-medium hover:bg-accent/90 transition-colors"
         >
           <Plus size={18} />
@@ -64,7 +64,7 @@ export default async function AdminProjects() {
                   </td>
                   <td className="py-3 px-4 text-text-muted">{project.year}</td>
                   <td className="py-3 px-4 flex items-center justify-end space-x-3">
-                    <Link href={`/admin/projects/${project.id}`} className="text-text-muted hover:text-accent transition-colors">
+                    <Link href={`/sk-portal-secret-994/projects/${project.id}`} className="text-text-muted hover:text-accent transition-colors">
                       <Edit size={18} />
                     </Link>
                     <form action={deleteProject}>

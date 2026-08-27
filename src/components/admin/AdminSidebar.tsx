@@ -30,12 +30,12 @@ export default function AdminSidebar() {
     { href: "/sk-portal-secret-994/media", label: "Media Library", icon: ImageIcon },
     { href: "/sk-portal-secret-994/messages", label: "Messages", icon: MessageSquare },
     { href: "/sk-portal-secret-994/homepage", label: "Homepage CMS", icon: Layers },
-    { href: "/sk-portal-secret-994/settings", label: "Settings", icon: Settings },
+    { href: "/sk-portal-secret-994/settings", label: "Settings & Resume", icon: Settings },
   ];
 
   return (
-    <aside className="w-64 bg-surface border-r border-border-color h-full flex flex-col z-50">
-      <div className="p-6 border-b border-border-color flex items-center justify-between">
+    <aside className="w-full md:w-64 h-full flex flex-col bg-surface border-b md:border-b-0 md:border-r border-border-color">
+      <div className="p-5 border-b border-border-color flex items-center justify-between">
         <Link href="/sk-portal-secret-994" className="text-xl font-bold tracking-tighter">
           PORTFOLIO<span className="text-accent">CMS</span>
         </Link>
@@ -49,13 +49,14 @@ export default function AdminSidebar() {
         </Link>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
+      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 overscroll-contain">
         <Link
           href="/"
-          className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-text-muted hover:bg-surface-hover hover:text-accent transition-colors font-medium mb-3 border border-border-color/50 bg-background/50"
+          target="_blank"
+          className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-text-muted hover:bg-surface-hover hover:text-accent transition-colors font-medium mb-3 border border-border-color/50 bg-background/50 text-sm"
         >
           <Globe size={18} />
-          <span>Public Portfolio</span>
+          <span>View Live Site</span>
         </Link>
 
         {links.map((link) => {
@@ -65,9 +66,9 @@ export default function AdminSidebar() {
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-colors ${
+              className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm transition-all font-medium ${
                 isActive
-                  ? "bg-accent/10 text-accent font-medium"
+                  ? "bg-accent text-background font-bold shadow-md"
                   : "text-text-muted hover:bg-surface-hover hover:text-foreground"
               }`}
             >
@@ -81,7 +82,7 @@ export default function AdminSidebar() {
       <div className="p-4 border-t border-border-color">
         <button
           onClick={() => signOut({ callbackUrl: "/sk-portal-secret-994/login" })}
-          className="flex w-full items-center space-x-3 px-3 py-2.5 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer font-medium"
+          className="flex w-full items-center space-x-3 px-3 py-2.5 rounded-xl text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer font-medium text-sm"
         >
           <LogOut size={18} />
           <span>Log out</span>

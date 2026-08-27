@@ -12,7 +12,7 @@ export default async function AdminBlog() {
     "use server";
     const id = formData.get("id") as string;
     await prisma.blogPost.delete({ where: { id } });
-    revalidatePath("/admin/blog");
+    revalidatePath("/sk-portal-secret-994/blog");
   }
 
   return (
@@ -23,7 +23,7 @@ export default async function AdminBlog() {
           <p className="text-text-muted mt-1">Manage your blog content.</p>
         </div>
         <Link
-          href="/admin/blog/new"
+          href="/sk-portal-secret-994/blog/new"
           className="flex items-center space-x-2 bg-accent text-background px-4 py-2 rounded-lg font-medium hover:bg-accent/90 transition-colors"
         >
           <Plus size={18} />
@@ -63,7 +63,7 @@ export default async function AdminBlog() {
                     {new Date(post.createdAt).toLocaleDateString()}
                   </td>
                   <td className="py-3 px-4 flex items-center justify-end space-x-3">
-                    <Link href={`/admin/blog/${post.id}`} className="text-text-muted hover:text-accent transition-colors">
+                    <Link href={`/sk-portal-secret-994/blog/${post.id}`} className="text-text-muted hover:text-accent transition-colors">
                       <Edit size={18} />
                     </Link>
                     <form action={deletePost}>

@@ -12,7 +12,7 @@ export default async function AdminTechnologies() {
     "use server";
     const id = formData.get("id") as string;
     await prisma.technology.delete({ where: { id } });
-    revalidatePath("/admin/technologies");
+    revalidatePath("/sk-portal-secret-994/technologies");
   }
 
   return (
@@ -23,7 +23,7 @@ export default async function AdminTechnologies() {
           <p className="text-text-muted mt-1">Manage skills and tech stack.</p>
         </div>
         <Link
-          href="/admin/technologies/new"
+          href="/sk-portal-secret-994/technologies/new"
           className="flex items-center space-x-2 bg-accent text-background px-4 py-2 rounded-lg font-medium hover:bg-accent/90 transition-colors"
         >
           <Plus size={18} />
@@ -55,7 +55,7 @@ export default async function AdminTechnologies() {
                   <td className="py-3 px-4 text-text-muted">{tech.category}</td>
                   <td className="py-3 px-4 text-text-muted">{tech.featured ? "Yes" : "No"}</td>
                   <td className="py-3 px-4 flex items-center justify-end space-x-3">
-                    <Link href={`/admin/technologies/${tech.id}`} className="text-text-muted hover:text-accent transition-colors">
+                    <Link href={`/sk-portal-secret-994/technologies/${tech.id}`} className="text-text-muted hover:text-accent transition-colors">
                       <Edit size={18} />
                     </Link>
                     <form action={deleteTechnology}>

@@ -42,6 +42,6 @@ export async function saveBlogPost(formData: FormData) {
     });
   }
 
-  revalidatePath("/admin/blog");
-  redirect("/admin/blog");
+  revalidatePath("/sk-portal-secret-994/blog");
+  redirect("/sk-portal-secret-994/blog");
 }

@@ -29,6 +29,6 @@ export async function saveTechnology(formData: FormData) {
     });
   }
 
-  revalidatePath("/admin/technologies");
-  redirect("/admin/technologies");
+  revalidatePath("/sk-portal-secret-994/technologies");
+  redirect("/sk-portal-secret-994/technologies");
 }

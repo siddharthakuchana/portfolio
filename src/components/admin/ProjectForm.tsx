@@ -37,7 +37,7 @@ export default function ProjectForm({ project, technologies = [] }: { project?: 
         throw new Error("Failed to save project");
       }
 
-      router.push("/admin/projects");
+      router.push("/sk-portal-secret-994/projects");
       router.refresh();
     } catch (err: any) {
       setError(err.message || "An error occurred");

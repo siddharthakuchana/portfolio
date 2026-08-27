@@ -15,12 +15,15 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen bg-background text-foreground overflow-hidden">
-      <div className="shrink-0 h-full">
+    <div className="flex flex-col md:flex-row min-h-screen bg-background text-foreground">
+      {/* Sidebar Container */}
+      <div className="w-full md:w-64 md:shrink-0 md:h-screen md:sticky md:top-0 z-40 bg-surface border-r border-border-color">
         <AdminSidebar />
       </div>
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
-        <main className="flex-1 overflow-y-auto p-6 md:p-10 overscroll-contain touch-pan-y">
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
+        <main className="flex-1 p-6 md:p-10 space-y-8">
           {children}
         </main>
       </div>
