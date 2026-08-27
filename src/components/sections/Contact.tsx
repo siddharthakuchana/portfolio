@@ -84,7 +84,7 @@ export default function Contact() {
                 <div className="relative mb-6">
                   <motion.div
                     initial={{ scale: 0 }}
-                    animate={{ scale: [0, 1.25, 1] }}
+                    animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 260, damping: 16 }}
                     className="w-20 h-20 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 rounded-full flex items-center justify-center relative z-10 shadow-lg shadow-emerald-500/20"
                   >
