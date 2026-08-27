@@ -7,7 +7,7 @@ const projects = [
   {
     title: "AlignWell",
     category: "Computer Vision / AI / Fitness",
-    summary: "An AI-powered exercise posture correction system that analyzes body posture using computer vision and provides real-time feedback to help users perform exercises with proper form.",
+    summary: "An AI-powered posture assessment and exercise monitoring system using Python, FastAPI, MediaPipe, and OpenCV to analyze exercise movements and identify incorrect form in real time.",
     content: "### AlignWell\n\nAn AI-powered exercise posture correction system using MediaPipe and OpenCV.",
     githubUrl: "https://github.com/siddharthakuchana/alignwell",
     liveUrl: "",
@@ -15,24 +15,34 @@ const projects = [
     order: 1
   },
   {
-    title: "AutoResultX",
-    category: "Automation / Python / Selenium",
-    summary: "An automation system designed to extract university results from dynamic web portals without manually entering every roll number.",
-    content: "### AutoResultX\n\nAutomated extraction tool for bulk result data into Excel formats.",
-    githubUrl: "https://github.com/siddharthakuchana/autoresultx",
+    title: "Career Guidance System",
+    category: "AI / Machine Learning / Full Stack",
+    summary: "An ML-powered career recommendation system that predicts suitable career paths based on users' skills, interests, and academic preferences.",
+    content: "### Career Guidance System\n\nML-powered career prediction platform.",
+    githubUrl: "https://github.com/siddharthakuchana/career-guidance",
     liveUrl: "",
     year: 2025,
     order: 2
   },
   {
-    title: "Career Guidance System",
-    category: "AI / Machine Learning / Full Stack",
-    summary: "A web-based career guidance platform that uses machine learning to recommend suitable career paths based on user skills and interests.",
-    content: "### Career Guidance System\n\nML-powered career prediction platform.",
-    githubUrl: "https://github.com/siddharthakuchana/career-guidance",
+    title: "IoT Fire Evacuation System",
+    category: "IoT / Sensor Fusion / A* Algorithm / Embedded",
+    summary: "An IoT-based fire safety system that continuously monitors temperature, smoke, and flame sensor data to calculate localized hazard scores and compute dynamic evacuation routes using the A* algorithm.",
+    content: "### IoT Fire Evacuation System\n\nReal-time hazard monitoring and dynamic pathfinding.",
+    githubUrl: "https://github.com/siddharthakuchana/iot-fire-evacuation",
     liveUrl: "",
     year: 2025,
     order: 3
+  },
+  {
+    title: "AutoResultX",
+    category: "Automation / Python / Selenium",
+    summary: "An automation system designed to extract university examination results from dynamic web portals automatically.",
+    content: "### AutoResultX\n\nAutomated extraction tool for bulk result data into Excel formats.",
+    githubUrl: "https://github.com/siddharthakuchana/autoresultx",
+    liveUrl: "",
+    year: 2025,
+    order: 4
   }
 ];
 
@@ -68,14 +78,15 @@ async function main() {
       displayName: "Siddhartha Kuchana",
       github: "https://github.com/siddharthakuchana",
       linkedin: "https://linkedin.com/in/siddharthakuchana",
-      email: "siddharthakuchana@gmail.com",
+      email: "siddharthakuchana0207@gmail.com",
+      resumeUrl: "/resume.pdf",
     },
     create: {
       id: "singleton",
       name: "Siddhartha Kuchana",
       displayName: "Siddhartha Kuchana",
-      role: "AI & ML Undergraduate | Full-Stack Developer | AI Engineer",
-      email: "siddharthakuchana@gmail.com",
+      role: "AI & ML Undergraduate | Full-Stack Developer | Machine Learning Engineer",
+      email: "siddharthakuchana0207@gmail.com",
       github: "https://github.com/siddharthakuchana",
       linkedin: "https://linkedin.com/in/siddharthakuchana",
       resumeUrl: "/resume.pdf",
