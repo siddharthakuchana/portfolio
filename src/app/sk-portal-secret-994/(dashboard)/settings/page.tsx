@@ -25,28 +25,46 @@ export default async function SettingsPage() {
     const email = formData.get("email") as string;
     const github = formData.get("github") as string;
     const linkedin = formData.get("linkedin") as string;
-    const resumeUrl = formData.get("resumeUrl") as string;
+    const resumeUrl = (formData.get("resumeUrl") as string) || "/resume";
     const seoTitle = formData.get("seoTitle") as string;
     const seoDesc = formData.get("seoDesc") as string;
 
+    const resumeFile = formData.get("resumeFile") as File | null;
+    let newResumeBase64: string | undefined = undefined;
+
+    if (resumeFile && resumeFile.size > 0) {
+      const bytes = await resumeFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      newResumeBase64 = buffer.toString("base64");
+    }
+
+    const updateData: any = {
+      name,
+      displayName,
+      role,
+      email,
+      github,
+      linkedin,
+      resumeUrl,
+      seoTitle,
+      seoDesc,
+    };
+
+    if (newResumeBase64) {
+      updateData.resumeBase64 = newResumeBase64;
+    }
+
     await prisma.siteSettings.upsert({
       where: { id: "singleton" },
-      update: { name, displayName, role, email, github, linkedin, resumeUrl, seoTitle, seoDesc },
+      update: updateData,
       create: {
         id: "singleton",
-        name,
-        displayName,
-        role,
-        email,
-        github,
-        linkedin,
-        resumeUrl,
-        seoTitle,
-        seoDesc,
+        ...updateData,
       },
     });
 
-    revalidatePath("/admin/settings");
+    revalidatePath("/sk-portal-secret-994/settings");
+    revalidatePath("/resume");
     revalidatePath("/");
     revalidatePath("/", "layout");
   }
@@ -55,7 +73,7 @@ export default async function SettingsPage() {
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
         <h1 className="text-3xl font-bold text-foreground tracking-tight">Site Settings</h1>
-        <p className="text-text-muted mt-2">Manage your global portfolio configuration.</p>
+        <p className="text-text-muted mt-2">Manage your global portfolio configuration and upload updated resume PDFs.</p>
       </div>
 
       <SettingsForm settings={settings} saveAction={updateSettings} />

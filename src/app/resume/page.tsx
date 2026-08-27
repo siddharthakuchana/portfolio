@@ -26,7 +26,8 @@ export default function ResumePage() {
   const portfolioData = usePortfolioData();
   const [viewAsPdf, setViewAsPdf] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const pdfDataUrl = `data:application/pdf;base64,${resumePdfBase64}`;
+  const activePdfBase64 = portfolioData.resumeBase64 || resumePdfBase64;
+  const pdfDataUrl = `data:application/pdf;base64,${activePdfBase64}`;
 
   const handlePrint = () => {
     window.print();

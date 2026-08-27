@@ -55,7 +55,8 @@ export default function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
     window.print();
   };
 
-  const pdfDataUrl = `data:application/pdf;base64,${resumePdfBase64}`;
+  const activePdfBase64 = portfolioData.resumeBase64 || resumePdfBase64;
+  const pdfDataUrl = `data:application/pdf;base64,${activePdfBase64}`;
 
   return (
     <AnimatePresence>

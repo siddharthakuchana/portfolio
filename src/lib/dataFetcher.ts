@@ -45,6 +45,7 @@ export async function getPortfolioData() {
         email: settings.email || fallbackData.socials.email,
         resume: settings.resumeUrl || fallbackData.socials.resume,
       },
+      resumeBase64: settings.resumeBase64 || null,
       projects: formattedDbProjects,
     };
   } catch (error) {

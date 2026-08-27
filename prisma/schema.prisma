@@ -47,6 +47,7 @@ model SiteSettings {
   linkedin      String   @default("")
   profileImage  String?
   resumeUrl     String?
+  resumeBase64  String?
   footerText    String   @default("Built with curiosity and code.")
   availability  String   @default("Available for opportunities")
   currentStatus String   @default("Building awesome things")
