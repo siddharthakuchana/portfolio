@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 export default async function AdminBlog() {
   const posts = await prisma.blogPost.findMany({
     orderBy: { createdAt: "desc" },
-  });
+  }).catch(() => []);
 
   async function deletePost(formData: FormData) {
     "use server";

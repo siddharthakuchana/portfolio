@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 export default async function AdminProjects() {
   const projects = await prisma.project.findMany({
     orderBy: { order: "asc" },
-  });
+  }).catch(() => []);
 
   async function deleteProject(formData: FormData) {
     "use server";

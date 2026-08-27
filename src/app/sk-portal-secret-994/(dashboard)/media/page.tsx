@@ -5,7 +5,7 @@ import { Copy } from "lucide-react";
 export default async function MediaLibrary() {
   const media = await prisma.media.findMany({
     orderBy: { createdAt: "desc" }
-  });
+  }).catch(() => []);
 
   return (
     <div className="space-y-6">

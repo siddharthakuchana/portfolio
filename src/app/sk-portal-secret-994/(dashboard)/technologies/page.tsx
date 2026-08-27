@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 export default async function AdminTechnologies() {
   const technologies = await prisma.technology.findMany({
     orderBy: { category: "asc" },
-  });
+  }).catch(() => []);
 
   async function deleteTechnology(formData: FormData) {
     "use server";

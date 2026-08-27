@@ -14,7 +14,7 @@ export default async function SettingsPage() {
 
   const settings = await prisma.siteSettings.findUnique({
     where: { id: "singleton" },
-  });
+  }).catch(() => null);
 
   async function updateSettings(formData: FormData) {
     "use server";

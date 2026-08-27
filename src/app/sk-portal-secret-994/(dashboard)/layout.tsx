@@ -8,7 +8,13 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+  let session = null;
+
+  try {
+    session = await getServerSession(authOptions);
+  } catch (error) {
+    console.error("Auth session check error:", error);
+  }
 
   if (!session) {
     redirect("/sk-portal-secret-994/login");
