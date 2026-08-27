@@ -74,6 +74,22 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 Days Persistent Session
+  },
+  jwt: {
+    maxAge: 30 * 24 * 60 * 60, // 30 Days Token Lifetime
+  },
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === "production" ? `__Secure-next-auth.session-token` : `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 30 * 24 * 60 * 60, // 30 Days Persistent Cookie
+      },
+    },
   },
   pages: {
     signIn: "/sk-portal-secret-994/login",

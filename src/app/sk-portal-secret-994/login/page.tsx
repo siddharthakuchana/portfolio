@@ -89,6 +89,17 @@ export default function AdminLogin() {
             />
           </div>
 
+          <div className="flex items-center justify-between">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                defaultChecked
+                className="w-4 h-4 rounded border-border-color bg-background text-accent focus:ring-accent accent-accent"
+              />
+              <span className="text-xs text-text-muted">Remember me (Keep me signed in)</span>
+            </label>
+          </div>
+
           <button
             type="submit"
             disabled={isLoading}
