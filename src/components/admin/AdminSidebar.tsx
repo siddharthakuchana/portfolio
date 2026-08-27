@@ -21,6 +21,15 @@ import {
 export default function AdminSidebar() {
   const pathname = usePathname();
 
+  const handleLogout = async () => {
+    try {
+      await signOut({ redirect: false });
+    } catch (e) {
+      console.error("Signout error:", e);
+    }
+    window.location.href = "/sk-portal-secret-994/login";
+  };
+
   const links = [
     { href: "/sk-portal-secret-994", label: "Dashboard", icon: LayoutDashboard },
     { href: "/sk-portal-secret-994/projects", label: "Projects", icon: FolderKanban },
@@ -81,7 +90,7 @@ export default function AdminSidebar() {
 
       <div className="p-4 border-t border-border-color">
         <button
-          onClick={() => signOut({ callbackUrl: "/sk-portal-secret-994/login" })}
+          onClick={handleLogout}
           className="flex w-full items-center space-x-3 px-3 py-2.5 rounded-xl text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer font-medium text-sm"
         >
           <LogOut size={18} />
