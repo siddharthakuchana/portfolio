@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { usePortfolioData } from "@/components/providers/PortfolioProvider";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/Icons";
+import { resumePdfBase64 } from "@/lib/resumeBase64";
 
 interface ResumeModalProps {
   isOpen: boolean;
@@ -29,6 +30,8 @@ export default function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
   const handlePrint = () => {
     window.print();
   };
+
+  const pdfDataUrl = `data:application/pdf;base64,${resumePdfBase64}`;
 
   return (
     <AnimatePresence>
@@ -70,14 +73,12 @@ export default function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
               </button>
 
               <a
-                href={portfolioData.socials.resume}
+                href={pdfDataUrl}
                 download="Siddhartha_Kuchana_Resume.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-accent text-background text-xs font-semibold hover:bg-accent/90 transition-colors shadow-md"
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-accent text-background text-xs font-semibold hover:bg-accent/90 transition-colors shadow-md cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Download</span>
+                <span>Download PDF</span>
               </a>
 
               <button

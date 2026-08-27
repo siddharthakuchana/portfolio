@@ -1,23 +1,17 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { resumePdfBase64 } from "@/lib/resumeBase64";
 
 export async function GET() {
   try {
-    const filePath = path.join(process.cwd(), "public", "resume.pdf");
+    const buffer = Buffer.from(resumePdfBase64, "base64");
 
-    if (!fs.existsSync(filePath)) {
-      return new NextResponse("Resume file not found", { status: 404 });
-    }
-
-    const fileBuffer = fs.readFileSync(filePath);
-
-    return new NextResponse(fileBuffer, {
+    return new NextResponse(buffer, {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": 'inline; filename="Siddhartha_Kuchana_Resume.pdf"',
-        "Cache-Control": "public, max-age=3600, s-maxage=86400",
+        "Content-Length": buffer.length.toString(),
+        "Cache-Control": "public, max-age=31536000, immutable",
       },
     });
   } catch (error) {
