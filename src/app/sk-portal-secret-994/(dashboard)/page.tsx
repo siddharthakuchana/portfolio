@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
-import { Users, FileText, Briefcase, Code, BarChart } from "lucide-react";
+import { Users, FileText, Briefcase, Code, BarChart, MessageSquare } from "lucide-react";
 import Link from "next/link";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function AdminDashboard() {
   let projectCount = 0;
@@ -9,6 +12,8 @@ export default async function AdminDashboard() {
   let blogCount = 0;
   let publishedBlogs = 0;
   let mediaCount = 0;
+  let messageCount = 0;
+  let unreadMessages = 0;
 
   try {
     projectCount = await prisma.project.count().catch(() => 0);
@@ -17,11 +22,14 @@ export default async function AdminDashboard() {
     blogCount = await prisma.blogPost.count().catch(() => 0);
     publishedBlogs = await prisma.blogPost.count({ where: { status: "PUBLISHED" } }).catch(() => 0);
     mediaCount = await prisma.media.count().catch(() => 0);
+    messageCount = await prisma.contactMessage.count().catch(() => 0);
+    unreadMessages = await prisma.contactMessage.count({ where: { status: "UNREAD" } }).catch(() => 0);
   } catch (err) {
     console.error("Error fetching stats:", err);
   }
 
   const stats = [
+    { title: "Contact Messages", value: messageCount, subValue: `${unreadMessages} unread`, icon: MessageSquare, color: "text-accent", href: "/sk-portal-secret-994/messages" },
     { title: "Total Projects", value: projectCount, subValue: `${publishedProjects} published`, icon: Briefcase, color: "text-blue-500", href: "/sk-portal-secret-994/projects" },
     { title: "Technologies", value: techCount, subValue: "Active stack", icon: Code, color: "text-purple-500", href: "/sk-portal-secret-994/technologies" },
     { title: "Blog Posts", value: blogCount, subValue: `${publishedBlogs} published`, icon: FileText, color: "text-green-500", href: "/sk-portal-secret-994/blog" },
@@ -37,7 +45,7 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
@@ -62,6 +70,9 @@ export default async function AdminDashboard() {
       <div className="mt-8 bg-surface border border-border-color rounded-xl p-6">
         <h2 className="text-xl font-bold text-foreground mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-4">
+          <Link href="/sk-portal-secret-994/messages" className="px-4 py-2 bg-accent/10 border border-accent/30 text-accent rounded-lg text-sm font-medium hover:bg-accent hover:text-background transition-colors">
+            View Inbox Messages ({unreadMessages} unread)
+          </Link>
           <Link href="/sk-portal-secret-994/projects/new" className="px-4 py-2 bg-background border border-border-color rounded-lg text-sm font-medium hover:border-accent hover:text-accent transition-colors">
             + New Project
           </Link>
@@ -79,3 +90,4 @@ export default async function AdminDashboard() {
     </div>
   );
 }
+
