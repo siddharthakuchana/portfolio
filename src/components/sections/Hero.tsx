@@ -1,10 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Download } from "lucide-react";
+import { ArrowRight, Download, Sparkles } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/Icons";
 import AIVisual from "@/components/visuals/AIVisual";
 import { usePortfolioData } from "@/components/providers/PortfolioProvider";
+import TypingText from "@/components/ui/TypingText";
+import MatrixText from "@/components/ui/MatrixText";
+import SlideTextButton from "@/components/ui/SlideTextButton";
+import SocialButton from "@/components/ui/SocialButton";
+import AppleActivityCard from "@/components/ui/AppleActivityCard";
 
 export default function Hero() {
   const portfolioData = usePortfolioData();
@@ -28,110 +33,136 @@ export default function Hero() {
     },
   };
 
+  const roles = [
+    "AI & ML Undergraduate",
+    "Machine Learning Specialist",
+    "Computer Vision Innovator",
+    "Full-Stack Web Developer",
+    "Open Source Enthusiast",
+  ];
+
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center pt-20 pb-10 overflow-hidden"
+      className="relative min-h-screen flex items-center pt-28 pb-16 overflow-hidden"
     >
       <AIVisual />
 
       <div className="container mx-auto px-6 max-w-7xl relative z-10">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="max-w-4xl"
-        >
-          <motion.div variants={itemVariants} className="flex items-center space-x-3 mb-6">
-            <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            <span className="text-xs md:text-sm font-mono tracking-widest uppercase text-accent">
-              Open to internships & opportunities
-            </span>
-          </motion.div>
-
-          <motion.h1
-            variants={itemVariants}
-            className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-[1.1] text-foreground mb-8"
-          >
-            Building{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-blue-600">
-              intelligent systems.
-            </span>
-          </motion.h1>
-
-          <motion.p
-            variants={itemVariants}
-            className="text-lg md:text-xl text-text-muted max-w-2xl leading-relaxed mb-10"
-          >
-            {portfolioData.role || "AI & ML undergraduate focused on machine learning, computer vision, automation, and full-stack development."}
-          </motion.p>
-
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          {/* Main Hero Content (Col 7) */}
           <motion.div
-            variants={itemVariants}
-            className="flex flex-wrap items-center gap-4 md:gap-6"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="lg:col-span-7"
           >
-            <a
-              href="#projects"
-              className="group relative px-8 py-4 bg-foreground text-background font-medium rounded-full overflow-hidden transition-transform hover:scale-[1.02] active:scale-[0.98] flex items-center space-x-2"
-            >
-              <span className="relative z-10">View My Work</span>
-              <ArrowRight size={18} className="relative z-10 transition-transform group-hover:translate-x-1" />
-              <div className="absolute inset-0 bg-accent transform scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100 z-0" />
-            </a>
+            <motion.div variants={itemVariants} className="flex items-center space-x-3 mb-6">
+              <div className="w-2.5 h-2.5 rounded-full bg-accent animate-ping" />
+              <span className="text-xs md:text-sm font-mono tracking-widest uppercase text-accent font-semibold flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5" />
+                <MatrixText text="OPEN TO INTERNSHIPS & OPPORTUNITIES" />
+              </span>
+            </motion.div>
 
-            <a
-              href="#contact"
-              className="px-8 py-4 border border-border-color hover:border-accent text-foreground font-medium rounded-full transition-all hover:bg-accent/5 flex items-center space-x-2"
+            <motion.h1
+              variants={itemVariants}
+              className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-[1.05] text-foreground mb-6"
             >
-              <span>Let's Connect</span>
-            </a>
+              Building{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-blue-500 to-purple-500">
+                <MatrixText text="intelligent" />
+              </span>{" "}
+              systems.
+            </motion.h1>
+
+            <motion.div variants={itemVariants} className="mb-8 min-h-[32px]">
+              <p className="text-lg md:text-2xl text-text-muted font-light flex items-center gap-2">
+                <span>Specialized in</span>
+                <TypingText
+                  phrases={roles}
+                  className="text-foreground font-semibold text-accent"
+                />
+              </p>
+            </motion.div>
+
+            <motion.p
+              variants={itemVariants}
+              className="text-base md:text-lg text-text-muted max-w-2xl leading-relaxed mb-10"
+            >
+              {portfolioData.role ||
+                "AI & ML undergraduate focused on machine learning, computer vision, automation, and full-stack development."}
+            </motion.p>
+
+            {/* Interactive Slide Text Buttons */}
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-wrap items-center gap-4 md:gap-6 mb-12"
+            >
+              <SlideTextButton
+                primaryText="View My Work"
+                secondaryText="Explore Projects →"
+                icon={<ArrowRight className="w-4 h-4 ml-1" />}
+                href="#projects"
+                variant="primary"
+              />
+
+              <SlideTextButton
+                primaryText="Let's Connect"
+                secondaryText="Get in Touch ✨"
+                href="#contact"
+                variant="secondary"
+              />
+            </motion.div>
+
+            {/* Social Buttons Dock */}
+            <motion.div
+              variants={itemVariants}
+              className="flex items-center gap-4 pt-6 border-t border-border-color/50"
+            >
+              <SocialButton
+                icon={<GithubIcon width={20} height={20} />}
+                label="GitHub Repos"
+                badge="12+ Repos"
+                href={portfolioData.socials.github}
+              />
+              <SocialButton
+                icon={<LinkedinIcon width={20} height={20} />}
+                label="LinkedIn Profile"
+                badge="Connect"
+                href={portfolioData.socials.linkedin}
+              />
+              <SocialButton
+                icon={<Download className="w-5 h-5" />}
+                label="Download Resume"
+                badge="PDF"
+                href={portfolioData.socials.resume}
+              />
+            </motion.div>
           </motion.div>
 
+          {/* Right Column: Apple Activity Card Showcase (Col 5) */}
           <motion.div
-            variants={itemVariants}
-            className="flex items-center space-x-6 mt-16 pt-8 border-t border-border-color/50"
+            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+            className="lg:col-span-5 relative"
           >
-            <a
-              href={portfolioData.socials.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-text-muted hover:text-foreground transition-colors flex items-center space-x-2 text-sm font-medium group"
-            >
-              <GithubIcon width={18} height={18} className="group-hover:text-accent transition-colors" />
-              <span>GitHub</span>
-            </a>
-            <a
-              href={portfolioData.socials.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-text-muted hover:text-foreground transition-colors flex items-center space-x-2 text-sm font-medium group"
-            >
-              <LinkedinIcon width={18} height={18} className="group-hover:text-accent transition-colors" />
-              <span>LinkedIn</span>
-            </a>
-            <a
-              href={portfolioData.socials.resume}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-text-muted hover:text-foreground transition-colors flex items-center space-x-2 text-sm font-medium group"
-            >
-              <Download size={18} className="group-hover:text-accent transition-colors" />
-              <span>Resume</span>
-            </a>
+            <AppleActivityCard className="shadow-accent/10" />
           </motion.div>
-        </motion.div>
+        </div>
       </div>
-      
+
       {/* Scroll Indicator */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2, duration: 1 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none"
       >
-        <div className="w-[1px] h-16 bg-gradient-to-b from-transparent via-accent to-transparent overflow-hidden relative">
-          <motion.div 
-            animate={{ y: [0, 64] }} 
+        <div className="w-[1px] h-14 bg-gradient-to-b from-transparent via-accent to-transparent overflow-hidden relative">
+          <motion.div
+            animate={{ y: [0, 56] }}
             transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
             className="absolute top-0 left-0 w-full h-1/2 bg-accent"
           />
@@ -140,3 +171,4 @@ export default function Hero() {
     </section>
   );
 }
+

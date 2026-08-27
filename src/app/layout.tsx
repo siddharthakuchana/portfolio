@@ -8,6 +8,7 @@ import CustomCursor from "@/components/ui/CustomCursor";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { PortfolioProvider } from "@/components/providers/PortfolioProvider";
 import CommandPalette from "@/components/ui/CommandPalette";
+import Toolbar from "@/components/ui/Toolbar";
 import { getPortfolioData } from "@/lib/dataFetcher";
 
 const geistSans = Geist({
@@ -47,6 +48,7 @@ export default async function RootLayout({
               {children}
             </main>
             <Footer />
+            <Toolbar />
           </SmoothScrolling>
           </PortfolioProvider>
         </AuthProvider>
@@ -54,3 +56,4 @@ export default async function RootLayout({
     </html>
   );
 }
+
