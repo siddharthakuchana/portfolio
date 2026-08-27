@@ -7,14 +7,31 @@ import { Send, CheckCircle2 } from "lucide-react";
 export default function Contact() {
   const [formState, setFormState] = useState<"idle" | "submitting" | "success">("idle");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormState("submitting");
-    
-    // Simulate API call for form submission
-    setTimeout(() => {
-      setFormState("success");
-    }, 1500);
+
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const message = formData.get("message") as string;
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
+
+      if (res.ok) {
+        setFormState("success");
+      } else {
+        setFormState("idle");
+      }
+    } catch (err) {
+      console.error("Error submitting contact form:", err);
+      setFormState("idle");
+    }
   };
 
   return (
@@ -76,6 +93,7 @@ export default function Contact() {
                   <input
                     type="text"
                     id="name"
+                    name="name"
                     required
                     className="w-full bg-background border border-border-color rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
                     placeholder="John Doe"
@@ -88,6 +106,7 @@ export default function Contact() {
                   <input
                     type="email"
                     id="email"
+                    name="email"
                     required
                     className="w-full bg-background border border-border-color rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
                     placeholder="john@example.com"
@@ -101,6 +120,7 @@ export default function Contact() {
                 </label>
                 <textarea
                   id="message"
+                  name="message"
                   required
                   rows={5}
                   className="w-full bg-background border border-border-color rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all resize-none"
