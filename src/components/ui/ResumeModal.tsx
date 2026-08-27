@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -30,6 +30,25 @@ export default function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
   const portfolioData = usePortfolioData();
   const [viewAsPdf, setViewAsPdf] = useState(false);
 
+  // Lock background body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      const originalPaddingRight = document.body.style.paddingRight;
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+      document.body.style.overflow = "hidden";
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+      }
+
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.paddingRight = originalPaddingRight;
+      };
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handlePrint = () => {
@@ -40,7 +59,7 @@ export default function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 overflow-y-auto bg-background/80 backdrop-blur-md">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-background/80 backdrop-blur-md">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -84,7 +103,7 @@ export default function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
 
               <button
                 onClick={handlePrint}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border-color text-xs font-medium text-text-muted hover:text-foreground hover:border-accent transition-colors"
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border-color text-xs font-medium text-text-muted hover:text-foreground hover:border-accent transition-colors cursor-pointer"
                 title="Print or Save PDF"
               >
                 <Printer className="w-3.5 h-3.5" />
@@ -110,8 +129,12 @@ export default function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
             </div>
           </div>
 
-          {/* Modal Scrollable Body */}
-          <div className="flex-1 overflow-y-auto p-6 sm:p-10 space-y-8 overscroll-contain touch-pan-y text-foreground">
+          {/* Modal Scrollable Body with Body Scroll Isolation */}
+          <div
+            className="flex-1 overflow-y-auto p-6 sm:p-10 space-y-8 overscroll-contain touch-pan-y text-foreground"
+            onTouchMove={(e) => e.stopPropagation()}
+            onWheel={(e) => e.stopPropagation()}
+          >
             {viewAsPdf ? (
               /* Embedded PDF Viewer Mode */
               <div className="w-full h-full min-h-[70vh] rounded-2xl overflow-hidden border border-border-color bg-background">
