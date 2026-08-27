@@ -128,7 +128,7 @@ export default function Hero() {
                 <SocialButton
                   icon={<GithubIcon width={20} height={20} />}
                   label="GitHub Repos"
-                  badge="12+ Repos"
+                  badge="16 Repos"
                   href={portfolioData.socials.github}
                 />
                 <SocialButton
@@ -137,17 +137,12 @@ export default function Hero() {
                   badge="Connect"
                   href={portfolioData.socials.linkedin}
                 />
-                <button
+                <SocialButton
+                  icon={<FileText className="w-5 h-5 text-amber-400" />}
+                  label="View Resume CV"
+                  badge="PDF"
                   onClick={() => setIsResumeModalOpen(true)}
-                  className="cursor-pointer"
-                >
-                  <SocialButton
-                    icon={<FileText className="w-5 h-5 text-amber-400" />}
-                    label="View Resume CV"
-                    badge="PDF"
-                    href="#"
-                  />
-                </button>
+                />
               </motion.div>
             </motion.div>
 

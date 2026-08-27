@@ -7,19 +7,41 @@ import { cn } from "@/lib/utils";
 interface SocialButtonProps {
   icon: React.ReactNode;
   label: string;
-  href: string;
+  href?: string;
+  onClick?: () => void;
   className?: string;
   badge?: string;
+  target?: string;
 }
 
 export default function SocialButton({
   icon,
   label,
   href,
+  onClick,
   className,
   badge,
+  target,
 }: SocialButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
+
+  const isExternal = href && href.startsWith("http");
+
+  const buttonInner = (
+    <div className="transition-transform group-hover:rotate-6">{icon}</div>
+  );
+
+  const sharedProps = {
+    onMouseEnter: () => setIsHovered(true),
+    onMouseLeave: () => setIsHovered(false),
+    whileHover: { scale: 1.1, y: -2 },
+    whileTap: { scale: 0.95 },
+    className: cn(
+      "w-12 h-12 rounded-2xl bg-surface/90 border border-border-color flex items-center justify-center text-text-muted hover:text-accent hover:border-accent/60 shadow-lg backdrop-blur-md transition-colors duration-300 group cursor-pointer",
+      className
+    ),
+    "aria-label": label,
+  };
 
   return (
     <div className="relative inline-flex items-center">
@@ -46,22 +68,20 @@ export default function SocialButton({
         )}
       </AnimatePresence>
 
-      <motion.a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        whileHover={{ scale: 1.1, y: -2 }}
-        whileTap={{ scale: 0.95 }}
-        className={cn(
-          "w-12 h-12 rounded-2xl bg-surface/90 border border-border-color flex items-center justify-center text-text-muted hover:text-accent hover:border-accent/60 shadow-lg backdrop-blur-md transition-colors duration-300 group",
-          className
-        )}
-        aria-label={label}
-      >
-        <div className="transition-transform group-hover:rotate-6">{icon}</div>
-      </motion.a>
+      {onClick ? (
+        <motion.button onClick={onClick} {...sharedProps}>
+          {buttonInner}
+        </motion.button>
+      ) : (
+        <motion.a
+          href={href}
+          target={target || (isExternal ? "_blank" : undefined)}
+          rel={isExternal ? "noopener noreferrer" : undefined}
+          {...sharedProps}
+        >
+          {buttonInner}
+        </motion.a>
+      )}
     </div>
   );
 }
