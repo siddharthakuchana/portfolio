@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import { Sparkles, ChevronLeft, ChevronRight, Maximize2, X, ImageIcon, Layers, Play, Pause } from "lucide-react";
+import { Sparkles, ChevronLeft, ChevronRight, Maximize2, X, ImageIcon, Layers } from "lucide-react";
 
 interface MediaItem {
   id: string;
@@ -18,10 +18,8 @@ interface MediaItem {
 export default function MediaGallery() {
   const [photos, setPhotos] = useState<MediaItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isAutoPlay, setIsAutoPlay] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
 
   // Motion values for swipe drag
   const x = useMotionValue(0);
@@ -35,7 +33,6 @@ export default function MediaGallery() {
         if (res.ok) {
           const data = await res.json();
           if (data.media && Array.isArray(data.media) && data.media.length > 0) {
-            // Filter for NORMAL gallery photos or valid image formats
             const galleryMedia = data.media.filter(
               (m: MediaItem) =>
                 (!m.category || m.category === "NORMAL") &&
@@ -45,7 +42,6 @@ export default function MediaGallery() {
             if (galleryMedia.length > 0) {
               setPhotos(galleryMedia);
             } else {
-              // Fallback to all uploaded items if none explicitly tagged as NORMAL
               const imageMedia = data.media.filter(
                 (m: MediaItem) =>
                   m.url.startsWith("data:") || m.url.startsWith("http") || m.url.startsWith("/") || (m.type && m.type.startsWith("image/"))
@@ -64,16 +60,16 @@ export default function MediaGallery() {
     fetchGalleryPhotos();
   }, []);
 
-  // Automatic Slideshow Timer (Advances every 4 seconds unless hovered, paused, or in lightbox)
+  // Continuous Automatic Slideshow (Runs every 3.5 seconds continuously)
   useEffect(() => {
-    if (!isAutoPlay || isHovered || photos.length <= 1 || lightboxImage) return;
+    if (photos.length <= 1 || isModalOpen) return;
 
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % photos.length);
-    }, 4000);
+    }, 3500);
 
     return () => clearInterval(interval);
-  }, [isAutoPlay, isHovered, photos.length, lightboxImage]);
+  }, [photos.length, isModalOpen]);
 
   const handleNext = () => {
     if (photos.length === 0) return;
@@ -107,7 +103,7 @@ export default function MediaGallery() {
   }
 
   if (photos.length === 0) {
-    return null; // Hide section cleanly if zero photos are present
+    return null; // Hide cleanly if zero photos are present
   }
 
   const currentPhoto = photos[currentIndex];
@@ -132,27 +128,22 @@ export default function MediaGallery() {
           </h2>
 
           <p className="text-text-muted text-sm md:text-base">
-            Auto-playing 3D slideshow. Drag, swipe, or click to explore.
+            Continuous 3D floating slideshow. Click any card to expand into a big card view.
           </p>
         </div>
 
-        {/* 3D Card Swipe Carousel */}
-        <div
-          className="relative max-w-lg mx-auto aspect-[4/3] flex items-center justify-center"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          {/* Card Stack Background (Next Photo Preview) */}
+        {/* 3D Card Swipe Carousel with Continuous Hover Animation */}
+        <div className="relative max-w-lg mx-auto aspect-[4/3] flex items-center justify-center">
+          {/* Card Stack Background 1 */}
           {photos.length > 1 && (
             <motion.div
-              className="absolute inset-0 rounded-3xl overflow-hidden border border-border-color bg-surface shadow-xl pointer-events-none opacity-40 scale-95 translate-y-4"
-              initial={false}
-              animate={{ scale: 0.94, y: 16 }}
-              transition={{ duration: 0.3 }}
+              className="absolute inset-0 rounded-3xl overflow-hidden border border-border-color bg-surface shadow-xl pointer-events-none opacity-40"
+              animate={{ scale: [0.93, 0.95, 0.93], y: [16, 12, 16] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
               <Image
                 src={nextPhoto.url}
-                alt={nextPhoto.filename || "Gallery image"}
+                alt="Gallery image preview"
                 fill
                 unoptimized
                 className="object-cover filter blur-[1px]"
@@ -160,17 +151,16 @@ export default function MediaGallery() {
             </motion.div>
           )}
 
-          {/* Card Stack Background 2 (Previous Photo Preview) */}
+          {/* Card Stack Background 2 */}
           {photos.length > 2 && (
             <motion.div
-              className="absolute inset-0 rounded-3xl overflow-hidden border border-border-color bg-surface shadow-2xl pointer-events-none opacity-20 scale-90 translate-y-8"
-              initial={false}
-              animate={{ scale: 0.88, y: 28 }}
-              transition={{ duration: 0.3 }}
+              className="absolute inset-0 rounded-3xl overflow-hidden border border-border-color bg-surface shadow-2xl pointer-events-none opacity-20"
+              animate={{ scale: [0.87, 0.89, 0.87], y: [28, 24, 28] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             >
               <Image
                 src={prevPhoto.url}
-                alt={prevPhoto.filename || "Gallery image"}
+                alt="Gallery image preview"
                 fill
                 unoptimized
                 className="object-cover"
@@ -178,7 +168,7 @@ export default function MediaGallery() {
             </motion.div>
           )}
 
-          {/* Main Active Card with Drag Swipe & Auto-Play */}
+          {/* Main Active Floating Card */}
           <AnimatePresence mode="wait">
             <motion.div
               key={currentPhoto.id || currentPhoto.url}
@@ -187,57 +177,52 @@ export default function MediaGallery() {
               dragConstraints={{ left: 0, right: 0 }}
               onDragEnd={handleDragEnd}
               whileTap={{ cursor: "grabbing" }}
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: -20 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="absolute inset-0 rounded-3xl overflow-hidden border-2 border-accent/30 bg-surface shadow-2xl cursor-grab group select-none"
+              animate={{ y: [0, -10, 0] }}
+              transition={{
+                y: { duration: 3.5, repeat: Infinity, ease: "easeInOut" },
+                type: "spring",
+                stiffness: 300,
+                damping: 25,
+              }}
+              onClick={() => setIsModalOpen(true)}
+              className="absolute inset-0 rounded-3xl overflow-hidden border-2 border-accent/40 bg-surface shadow-2xl cursor-pointer group select-none hover:border-accent hover:shadow-accent/20 transition-colors"
             >
               <Image
                 src={currentPhoto.url}
-                alt={currentPhoto.filename || "Gallery photo"}
+                alt="Gallery photo"
                 fill
                 unoptimized
                 priority
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
               />
 
               {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-80 group-hover:opacity-95 transition-opacity" />
 
-              {/* Top Auto-Play Status Indicator */}
-              <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-white bg-black/50 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 flex items-center gap-1.5">
-                  <span className={`w-2 h-2 rounded-full ${isAutoPlay && !isHovered ? "bg-emerald-400 animate-ping" : "bg-amber-400"}`} />
-                  {isHovered ? "Paused (Hovered)" : isAutoPlay ? "Slideshow Auto-Playing" : "Slideshow Paused"}
+              {/* Top Live Badge */}
+              <div className="absolute top-4 left-4 z-20">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-white bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
+                  <span>Photo {currentIndex + 1} of {photos.length}</span>
                 </span>
               </div>
 
-              {/* Bottom Card Meta Info */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 flex items-end justify-between z-20">
-                <div className="space-y-1 max-w-[80%]">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-accent bg-accent/20 px-2.5 py-1 rounded-md backdrop-blur-md">
-                    Photo {currentIndex + 1} of {photos.length}
-                  </span>
-                  <h3 className="text-base font-bold text-white truncate" title={currentPhoto.filename}>
-                    {currentPhoto.filename || `Photo ${currentIndex + 1}`}
-                  </h3>
-                </div>
+              {/* Bottom Card Expand Action (Raw Filename Removed) */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 flex items-center justify-between z-20">
+                <span className="text-xs text-white/90 font-medium flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10">
+                  <Maximize2 size={14} className="text-accent" />
+                  <span>Click to expand big card</span>
+                </span>
 
-                {/* Lightbox Trigger */}
-                <button
-                  onClick={() => setLightboxImage(currentPhoto.url)}
-                  className="p-3 bg-background/60 hover:bg-accent hover:text-background rounded-full text-white backdrop-blur-md transition-all shadow-lg cursor-pointer"
-                  title="Expand Fullscreen"
-                >
-                  <Maximize2 size={18} />
-                </button>
+                <div className="p-3 bg-accent text-background rounded-full font-bold shadow-lg group-hover:scale-110 transition-transform">
+                  <Maximize2 size={16} />
+                </div>
               </div>
             </motion.div>
           </AnimatePresence>
         </div>
 
-        {/* Carousel Controls, Play/Pause & Pagination Dots */}
+        {/* Carousel Controls & Pagination Dots */}
         <div className="mt-10 flex flex-col items-center justify-center space-y-4">
           <div className="flex items-center gap-3">
             {/* Prev Button */}
@@ -248,21 +233,6 @@ export default function MediaGallery() {
             >
               <ChevronLeft size={20} />
             </button>
-
-            {/* Play / Pause Toggle Button */}
-            {photos.length > 1 && (
-              <button
-                onClick={() => setIsAutoPlay((prev) => !prev)}
-                className={`p-3.5 border rounded-2xl transition-all cursor-pointer shadow-md flex items-center justify-center ${
-                  isAutoPlay
-                    ? "bg-accent/15 border-accent text-accent"
-                    : "bg-surface border-border-color text-text-muted hover:text-foreground"
-                }`}
-                title={isAutoPlay ? "Pause Automatic Slideshow" : "Start Automatic Slideshow"}
-              >
-                {isAutoPlay ? <Pause size={20} /> : <Play size={20} />}
-              </button>
-            )}
 
             {/* Pagination Dots */}
             <div className="flex items-center gap-2 max-w-xs overflow-x-auto px-3 py-2 bg-surface/80 border border-border-color rounded-full">
@@ -292,37 +262,93 @@ export default function MediaGallery() {
 
           <p className="text-xs text-text-muted flex items-center gap-1.5">
             <Layers size={14} className="text-accent" />
-            <span>Auto-plays every 4s. Hover to pause, or drag/swipe cards to navigate.</span>
+            <span>Click any card to open the expanded Big Card view</span>
           </p>
         </div>
       </div>
 
-      {/* Lightbox Modal */}
+      {/* Expanded Big Card Modal */}
       <AnimatePresence>
-        {lightboxImage && (
+        {isModalOpen && currentPhoto && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4"
-            onClick={() => setLightboxImage(null)}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 md:p-8"
+            onClick={() => setIsModalOpen(false)}
           >
-            <div className="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center">
-              <button
-                onClick={() => setLightboxImage(null)}
-                className="absolute top-4 right-4 z-50 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors cursor-pointer"
-              >
-                <X size={24} />
-              </button>
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.85, opacity: 0, y: 30 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-4xl max-h-[85vh] bg-surface border-2 border-accent/40 rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+            >
+              {/* Modal Header Controls */}
+              <div className="p-4 bg-background/80 border-b border-border-color flex items-center justify-between backdrop-blur-md">
+                <span className="text-xs font-bold text-accent uppercase tracking-widest px-3 py-1 bg-accent/10 rounded-full border border-accent/20">
+                  Big Card View • Photo {currentIndex + 1} of {photos.length}
+                </span>
 
-              <Image
-                src={lightboxImage}
-                alt="Enlarged photo"
-                fill
-                unoptimized
-                className="object-contain"
-              />
-            </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handlePrev}
+                    className="p-2 bg-surface hover:bg-accent hover:text-background rounded-full text-foreground border border-border-color transition-colors cursor-pointer"
+                    title="Previous Photo"
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  <button
+                    onClick={handleNext}
+                    className="p-2 bg-surface hover:bg-accent hover:text-background rounded-full text-foreground border border-border-color transition-colors cursor-pointer"
+                    title="Next Photo"
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+                  <button
+                    onClick={() => setIsModalOpen(false)}
+                    className="p-2 bg-white/10 hover:bg-red-500 hover:text-white rounded-full text-foreground transition-colors cursor-pointer"
+                    title="Close Modal"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal Large Photo View */}
+              <div className="relative flex-1 w-full min-h-[400px] md:min-h-[550px] bg-black/60 flex items-center justify-center p-4">
+                <Image
+                  src={currentPhoto.url}
+                  alt="Expanded photo view"
+                  fill
+                  unoptimized
+                  priority
+                  className="object-contain"
+                />
+
+                {/* Big Card Navigation Arrows Overlay */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePrev();
+                  }}
+                  className="absolute left-4 p-3 bg-black/50 hover:bg-accent hover:text-background border border-white/20 rounded-full text-white backdrop-blur-md transition-all shadow-xl cursor-pointer"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNext();
+                  }}
+                  className="absolute right-4 p-3 bg-black/50 hover:bg-accent hover:text-background border border-white/20 rounded-full text-white backdrop-blur-md transition-all shadow-xl cursor-pointer"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
