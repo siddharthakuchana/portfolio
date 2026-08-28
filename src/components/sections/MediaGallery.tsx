@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import { Sparkles, ChevronLeft, ChevronRight, Maximize2, X, ImageIcon, Layers } from "lucide-react";
+import { Sparkles, ChevronLeft, ChevronRight, Maximize2, X, ImageIcon, Layers, Play, Pause } from "lucide-react";
 
 interface MediaItem {
   id: string;
@@ -20,6 +20,8 @@ export default function MediaGallery() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
 
   // Motion values for swipe drag
   const x = useMotionValue(0);
@@ -33,7 +35,7 @@ export default function MediaGallery() {
         if (res.ok) {
           const data = await res.json();
           if (data.media && Array.isArray(data.media) && data.media.length > 0) {
-            // Filter for NORMAL gallery photos or images
+            // Filter for NORMAL gallery photos or valid image formats
             const galleryMedia = data.media.filter(
               (m: MediaItem) =>
                 (!m.category || m.category === "NORMAL") &&
@@ -61,6 +63,17 @@ export default function MediaGallery() {
 
     fetchGalleryPhotos();
   }, []);
+
+  // Automatic Slideshow Timer (Advances every 4 seconds unless hovered, paused, or in lightbox)
+  useEffect(() => {
+    if (!isAutoPlay || isHovered || photos.length <= 1 || lightboxImage) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % photos.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [isAutoPlay, isHovered, photos.length, lightboxImage]);
 
   const handleNext = () => {
     if (photos.length === 0) return;
@@ -94,7 +107,7 @@ export default function MediaGallery() {
   }
 
   if (photos.length === 0) {
-    return null; // Hide cleanly if zero photos have been uploaded
+    return null; // Hide section cleanly if zero photos are present
   }
 
   const currentPhoto = photos[currentIndex];
@@ -119,12 +132,16 @@ export default function MediaGallery() {
           </h2>
 
           <p className="text-text-muted text-sm md:text-base">
-            Swipe, drag, or navigate through visual highlights and photos.
+            Auto-playing 3D slideshow. Drag, swipe, or click to explore.
           </p>
         </div>
 
         {/* 3D Card Swipe Carousel */}
-        <div className="relative max-w-lg mx-auto aspect-[4/3] flex items-center justify-center">
+        <div
+          className="relative max-w-lg mx-auto aspect-[4/3] flex items-center justify-center"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           {/* Card Stack Background (Next Photo Preview) */}
           {photos.length > 1 && (
             <motion.div
@@ -161,7 +178,7 @@ export default function MediaGallery() {
             </motion.div>
           )}
 
-          {/* Main Active Card with Drag Swipe */}
+          {/* Main Active Card with Drag Swipe & Auto-Play */}
           <AnimatePresence mode="wait">
             <motion.div
               key={currentPhoto.id || currentPhoto.url}
@@ -188,8 +205,16 @@ export default function MediaGallery() {
               {/* Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
 
+              {/* Top Auto-Play Status Indicator */}
+              <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-white bg-black/50 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 flex items-center gap-1.5">
+                  <span className={`w-2 h-2 rounded-full ${isAutoPlay && !isHovered ? "bg-emerald-400 animate-ping" : "bg-amber-400"}`} />
+                  {isHovered ? "Paused (Hovered)" : isAutoPlay ? "Slideshow Auto-Playing" : "Slideshow Paused"}
+                </span>
+              </div>
+
               {/* Bottom Card Meta Info */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 flex items-end justify-between">
+              <div className="absolute bottom-0 left-0 right-0 p-6 flex items-end justify-between z-20">
                 <div className="space-y-1 max-w-[80%]">
                   <span className="text-[11px] font-semibold uppercase tracking-wider text-accent bg-accent/20 px-2.5 py-1 rounded-md backdrop-blur-md">
                     Photo {currentIndex + 1} of {photos.length}
@@ -212,9 +237,10 @@ export default function MediaGallery() {
           </AnimatePresence>
         </div>
 
-        {/* Carousel Controls & Pagination Dots */}
+        {/* Carousel Controls, Play/Pause & Pagination Dots */}
         <div className="mt-10 flex flex-col items-center justify-center space-y-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {/* Prev Button */}
             <button
               onClick={handlePrev}
               className="p-3.5 bg-surface hover:bg-accent hover:text-background border border-border-color rounded-2xl text-foreground transition-all cursor-pointer shadow-md"
@@ -222,6 +248,21 @@ export default function MediaGallery() {
             >
               <ChevronLeft size={20} />
             </button>
+
+            {/* Play / Pause Toggle Button */}
+            {photos.length > 1 && (
+              <button
+                onClick={() => setIsAutoPlay((prev) => !prev)}
+                className={`p-3.5 border rounded-2xl transition-all cursor-pointer shadow-md flex items-center justify-center ${
+                  isAutoPlay
+                    ? "bg-accent/15 border-accent text-accent"
+                    : "bg-surface border-border-color text-text-muted hover:text-foreground"
+                }`}
+                title={isAutoPlay ? "Pause Automatic Slideshow" : "Start Automatic Slideshow"}
+              >
+                {isAutoPlay ? <Pause size={20} /> : <Play size={20} />}
+              </button>
+            )}
 
             {/* Pagination Dots */}
             <div className="flex items-center gap-2 max-w-xs overflow-x-auto px-3 py-2 bg-surface/80 border border-border-color rounded-full">
@@ -239,6 +280,7 @@ export default function MediaGallery() {
               ))}
             </div>
 
+            {/* Next Button */}
             <button
               onClick={handleNext}
               className="p-3.5 bg-surface hover:bg-accent hover:text-background border border-border-color rounded-2xl text-foreground transition-all cursor-pointer shadow-md"
@@ -250,7 +292,7 @@ export default function MediaGallery() {
 
           <p className="text-xs text-text-muted flex items-center gap-1.5">
             <Layers size={14} className="text-accent" />
-            <span>Drag cards left/right or click buttons to swipe</span>
+            <span>Auto-plays every 4s. Hover to pause, or drag/swipe cards to navigate.</span>
           </p>
         </div>
       </div>
