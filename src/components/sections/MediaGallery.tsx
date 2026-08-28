@@ -9,7 +9,7 @@ interface MediaItem {
   id: string;
   filename: string;
   url: string;
-  type: string;
+  type?: string;
   size?: number;
   category?: string;
   caption?: string;
@@ -32,17 +32,23 @@ export default function MediaGallery() {
         const res = await fetch("/api/admin/media");
         if (res.ok) {
           const data = await res.json();
-          if (data.media && Array.isArray(data.media)) {
-            // Filter for NORMAL gallery photos (or photos with image mime type)
+          if (data.media && Array.isArray(data.media) && data.media.length > 0) {
+            // Filter for NORMAL gallery photos or images
             const galleryMedia = data.media.filter(
               (m: MediaItem) =>
                 (!m.category || m.category === "NORMAL") &&
-                m.type &&
-                m.type.startsWith("image/")
+                (m.url.startsWith("data:") || m.url.startsWith("http") || m.url.startsWith("/") || (m.type && m.type.startsWith("image/")))
             );
 
             if (galleryMedia.length > 0) {
               setPhotos(galleryMedia);
+            } else {
+              // Fallback to all uploaded items if none explicitly tagged as NORMAL
+              const imageMedia = data.media.filter(
+                (m: MediaItem) =>
+                  m.url.startsWith("data:") || m.url.startsWith("http") || m.url.startsWith("/") || (m.type && m.type.startsWith("image/"))
+              );
+              setPhotos(imageMedia);
             }
           }
         }
@@ -88,7 +94,7 @@ export default function MediaGallery() {
   }
 
   if (photos.length === 0) {
-    return null; // Hide section cleanly if no normal photos have been uploaded yet
+    return null; // Hide cleanly if zero photos have been uploaded
   }
 
   const currentPhoto = photos[currentIndex];
@@ -105,7 +111,7 @@ export default function MediaGallery() {
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-semibold uppercase tracking-widest">
             <Sparkles size={14} />
-            <span>Visual Showcase</span>
+            <span>Visual Gallery</span>
           </div>
 
           <h2 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight">
@@ -113,7 +119,7 @@ export default function MediaGallery() {
           </h2>
 
           <p className="text-text-muted text-sm md:text-base">
-            Swipe, drag, or navigate through photos and visual highlights.
+            Swipe, drag, or navigate through visual highlights and photos.
           </p>
         </div>
 
@@ -129,7 +135,7 @@ export default function MediaGallery() {
             >
               <Image
                 src={nextPhoto.url}
-                alt={nextPhoto.filename}
+                alt={nextPhoto.filename || "Gallery image"}
                 fill
                 unoptimized
                 className="object-cover filter blur-[1px]"
@@ -147,7 +153,7 @@ export default function MediaGallery() {
             >
               <Image
                 src={prevPhoto.url}
-                alt={prevPhoto.filename}
+                alt={prevPhoto.filename || "Gallery image"}
                 fill
                 unoptimized
                 className="object-cover"
@@ -158,7 +164,7 @@ export default function MediaGallery() {
           {/* Main Active Card with Drag Swipe */}
           <AnimatePresence mode="wait">
             <motion.div
-              key={currentPhoto.id}
+              key={currentPhoto.id || currentPhoto.url}
               style={{ x, rotate, opacity }}
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
@@ -172,7 +178,7 @@ export default function MediaGallery() {
             >
               <Image
                 src={currentPhoto.url}
-                alt={currentPhoto.filename}
+                alt={currentPhoto.filename || "Gallery photo"}
                 fill
                 unoptimized
                 priority
@@ -189,7 +195,7 @@ export default function MediaGallery() {
                     Photo {currentIndex + 1} of {photos.length}
                   </span>
                   <h3 className="text-base font-bold text-white truncate" title={currentPhoto.filename}>
-                    {currentPhoto.filename}
+                    {currentPhoto.filename || `Photo ${currentIndex + 1}`}
                   </h3>
                 </div>
 

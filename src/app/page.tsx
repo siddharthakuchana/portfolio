@@ -2,9 +2,9 @@ import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
 import Skills from "@/components/sections/Skills";
 import Projects from "@/components/sections/Projects";
-import MediaGallery from "@/components/sections/MediaGallery";
 import CaseStudies from "@/components/sections/CaseStudies";
 import Journey from "@/components/sections/Journey";
+import MediaGallery from "@/components/sections/MediaGallery";
 import Achievements from "@/components/sections/Achievements";
 import GithubSection from "@/components/sections/Github";
 import CurrentlyExploring from "@/components/sections/CurrentlyExploring";
@@ -16,24 +16,24 @@ const sectionMap: Record<string, React.FC> = {
   about: About,
   skills: Skills,
   projects: Projects,
-  mediaGallery: MediaGallery,
   caseStudies: CaseStudies,
   journey: Journey,
+  mediaGallery: MediaGallery,
   achievements: Achievements,
   github: GithubSection,
   currentlyExploring: CurrentlyExploring,
   contact: Contact,
 };
 
-// Default order in case the DB is empty
+// Default order: mediaGallery comes directly after journey
 const defaultSections = [
   { type: "hero", enabled: true },
   { type: "about", enabled: true },
   { type: "skills", enabled: true },
   { type: "projects", enabled: true },
-  { type: "mediaGallery", enabled: true },
   { type: "caseStudies", enabled: true },
   { type: "journey", enabled: true },
+  { type: "mediaGallery", enabled: true },
   { type: "achievements", enabled: true },
   { type: "github", enabled: true },
   { type: "currentlyExploring", enabled: true },
@@ -49,12 +49,12 @@ export default async function Home() {
     });
     
     if (dbSections.length > 0) {
-      // Check if mediaGallery is missing in existing DB sections, if so append it after projects
+      // Ensure mediaGallery is placed right after journey if not already present
       const hasMediaGallery = dbSections.some((s) => s.type === "mediaGallery");
       if (!hasMediaGallery) {
-        const projectsIndex = dbSections.findIndex((s) => s.type === "projects");
-        if (projectsIndex !== -1) {
-          dbSections.splice(projectsIndex + 1, 0, { id: "media-gallery-section", type: "mediaGallery", title: "Media Gallery", subtitle: null, order: projectsIndex + 1, enabled: true });
+        const journeyIndex = dbSections.findIndex((s) => s.type === "journey");
+        if (journeyIndex !== -1) {
+          dbSections.splice(journeyIndex + 1, 0, { id: "media-gallery-section", type: "mediaGallery", title: "Media Gallery", subtitle: null, order: journeyIndex + 1, enabled: true });
         } else {
           dbSections.push({ id: "media-gallery-section", type: "mediaGallery", title: "Media Gallery", subtitle: null, order: 99, enabled: true });
         }
