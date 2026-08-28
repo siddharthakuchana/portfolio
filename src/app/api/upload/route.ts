@@ -6,7 +6,7 @@ import path from "path";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
-  // Check auth session
+  // Check auth session (skipped in development for ease of use)
   const session = await getServerSession(authOptions);
   if (!session && process.env.NODE_ENV === "production") {
     return NextResponse.json(
@@ -26,31 +26,40 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Create unique filename
+    // Generate unique filename
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
     const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
     const filename = `${uniqueSuffix}-${cleanFileName}`;
+    const mimeType = file.type || "image/jpeg";
     
-    const uploadDir = path.join(process.cwd(), "public/uploads");
+    // Construct base64 Data URL (guaranteed fallback for Vercel/serverless read-only filesystems)
+    const base64String = buffer.toString("base64");
+    const dataUrl = `data:${mimeType};base64,${base64String}`;
     
-    // Ensure upload directory exists
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (e) {}
+    let finalUrl = dataUrl;
 
-    const filepath = path.join(uploadDir, filename);
-    await writeFile(filepath, buffer);
-    
-    const url = `/uploads/${filename}`;
+    // Try saving locally to public/uploads (works on local machine or traditional server)
+    try {
+      const uploadDir = path.join(process.cwd(), "public/uploads");
+      await mkdir(uploadDir, { recursive: true });
+      const filepath = path.join(uploadDir, filename);
+      await writeFile(filepath, buffer);
+      finalUrl = `/uploads/${filename}`;
+    } catch (fsErr) {
+      console.warn("Local filesystem write disabled or failed (serverless environment). Using Base64 Data URL fallback.", fsErr);
+      // Fallback to dataUrl when filesystem is read-only like Vercel /var/task
+      finalUrl = dataUrl;
+    }
+
     let mediaObj: any = null;
 
-    // Try saving to database Media model
+    // Save to database Media model
     try {
       mediaObj = await prisma.media.create({
         data: {
           filename: file.name,
-          url,
-          type: file.type || "image/jpeg",
+          url: finalUrl,
+          type: mimeType,
           size: file.size,
         },
       });
@@ -59,14 +68,14 @@ export async function POST(req: Request) {
       mediaObj = {
         id: uniqueSuffix,
         filename: file.name,
-        url,
-        type: file.type || "image/jpeg",
+        url: finalUrl,
+        type: mimeType,
         size: file.size,
         createdAt: new Date().toISOString(),
       };
     }
 
-    return NextResponse.json({ success: true, url, media: mediaObj });
+    return NextResponse.json({ success: true, url: finalUrl, media: mediaObj });
   } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json(

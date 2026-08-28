@@ -277,6 +277,7 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
                       src={item.url}
                       alt={item.filename || "Uploaded media"}
                       fill
+                      unoptimized
                       sizes="(max-width: 768px) 50vw, 25vw"
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
