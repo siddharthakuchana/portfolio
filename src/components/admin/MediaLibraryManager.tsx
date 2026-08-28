@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
-import { Upload, Copy, Check, Trash2, Image as ImageIcon, Link as LinkIcon, ExternalLink, Globe, Layout, BookOpen, User } from "lucide-react";
+import { Upload, Copy, Check, Trash2, Image as ImageIcon, Link as LinkIcon, ExternalLink, Globe, Layout, BookOpen, User, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface MediaItem {
@@ -18,14 +18,21 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
   const [mediaList, setMediaList] = useState<MediaItem[]>(initialMedia);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "images">("all");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     setIsUploading(true);
+    setErrorMessage("");
+    setSuccessMessage("");
     setUploadProgress(`Uploading ${files.length} file(s)...`);
+
+    let uploadedCount = 0;
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -39,16 +46,30 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
         });
 
         const data = await res.json();
-        if (data.media) {
+
+        if (!res.ok || data.error) {
+          setErrorMessage(data.error || `Failed to upload ${file.name}`);
+        } else if (data.media) {
           setMediaList((prev) => [data.media, ...prev]);
+          uploadedCount++;
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error("Upload error:", err);
+        setErrorMessage(err.message || "Failed to upload file due to network error");
       }
+    }
+
+    if (uploadedCount > 0) {
+      setSuccessMessage(`Successfully uploaded ${uploadedCount} photo(s)!`);
+      setTimeout(() => setSuccessMessage(""), 4000);
     }
 
     setIsUploading(false);
     setUploadProgress("");
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleCopyUrl = (id: string, url: string) => {
@@ -60,6 +81,7 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this media item?")) return;
     setIsDeleting(id);
+    setErrorMessage("");
 
     try {
       const res = await fetch(`/api/admin/media?id=${id}`, {
@@ -68,6 +90,9 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
 
       if (res.ok) {
         setMediaList((prev) => prev.filter((item) => item.id !== id));
+      } else {
+        const data = await res.json();
+        setErrorMessage(data.error || "Failed to delete item");
       }
     } catch (err) {
       console.error("Delete error:", err);
@@ -77,13 +102,14 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
   };
 
   const formatFileSize = (bytes: number) => {
+    if (!bytes) return "0 B";
     if (bytes < 1024) return bytes + " B";
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
     return (bytes / (1024 * 1024)).toFixed(1) + " MB";
   };
 
   const filteredMedia = mediaList.filter((item) => {
-    if (filter === "images") return item.type.startsWith("image/");
+    if (filter === "images") return item.type && item.type.startsWith("image/");
     return true;
   });
 
@@ -97,7 +123,7 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
             Media Library
           </h1>
           <p className="text-text-muted text-sm mt-1">
-            Upload photos, project covers, and assets. Use uploaded URLs across your public portfolio.
+            Upload photos, project covers, and assets. Copy image URLs to use across your portfolio.
           </p>
         </div>
 
@@ -106,6 +132,7 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
           <Upload size={18} />
           <span>Upload Photos</span>
           <input
+            ref={fileInputRef}
             type="file"
             multiple
             accept="image/*,.pdf"
@@ -116,9 +143,25 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
         </label>
       </div>
 
+      {/* Status Notifications */}
+      {errorMessage && (
+        <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-500 text-sm flex items-center gap-2">
+          <AlertCircle size={18} />
+          <span>{errorMessage}</span>
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-sm flex items-center gap-2">
+          <Check size={18} />
+          <span>{successMessage}</span>
+        </div>
+      )}
+
       {/* Drag & Drop Upload Zone */}
       <div
         className="border-2 border-dashed border-border-color hover:border-accent/50 rounded-2xl p-8 text-center bg-surface/50 transition-colors cursor-pointer relative"
+        onClick={() => fileInputRef.current?.click()}
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
@@ -189,7 +232,7 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
         <div className="flex items-center gap-2">
           <button
             onClick={() => setFilter("all")}
-            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
+            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
               filter === "all"
                 ? "bg-accent text-background"
                 : "bg-surface text-text-muted hover:text-foreground"
@@ -199,13 +242,13 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
           </button>
           <button
             onClick={() => setFilter("images")}
-            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
+            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
               filter === "images"
                 ? "bg-accent text-background"
                 : "bg-surface text-text-muted hover:text-foreground"
             }`}
           >
-            Images Only ({mediaList.filter((m) => m.type.startsWith("image/")).length})
+            Images Only ({mediaList.filter((m) => m.type && m.type.startsWith("image/")).length})
           </button>
         </div>
       </div>
@@ -217,7 +260,7 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
             <div className="col-span-full py-16 text-center text-text-muted bg-surface rounded-2xl border border-border-color">
               <ImageIcon size={40} className="mx-auto mb-3 text-text-muted opacity-40" />
               <p className="text-sm font-medium">No media uploaded yet.</p>
-              <p className="text-xs mt-1">Upload photos using the button above.</p>
+              <p className="text-xs mt-1">Upload photos using the button or drop zone above.</p>
             </div>
           ) : (
             filteredMedia.map((item) => (
@@ -229,10 +272,10 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
                 className="group relative bg-surface border border-border-color rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between"
               >
                 <div className="relative aspect-square w-full bg-background/50 flex items-center justify-center overflow-hidden">
-                  {item.type.startsWith("image/") ? (
+                  {item.type && item.type.startsWith("image/") ? (
                     <Image
                       src={item.url}
-                      alt={item.filename}
+                      alt={item.filename || "Uploaded media"}
                       fill
                       sizes="(max-width: 768px) 50vw, 25vw"
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -248,7 +291,7 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-xs">
                     <button
                       onClick={() => handleCopyUrl(item.id, item.url)}
-                      className="p-2.5 bg-background text-foreground hover:bg-accent hover:text-background rounded-full transition-all shadow-md"
+                      className="p-2.5 bg-background text-foreground hover:bg-accent hover:text-background rounded-full transition-all shadow-md cursor-pointer"
                       title="Copy Public URL"
                     >
                       {copiedId === item.id ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
@@ -258,7 +301,7 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2.5 bg-background text-foreground hover:bg-accent hover:text-background rounded-full transition-all shadow-md"
+                      className="p-2.5 bg-background text-foreground hover:bg-accent hover:text-background rounded-full transition-all shadow-md cursor-pointer"
                       title="View Full Image"
                     >
                       <ExternalLink size={16} />
@@ -267,7 +310,7 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
                     <button
                       onClick={() => handleDelete(item.id)}
                       disabled={isDeleting === item.id}
-                      className="p-2.5 bg-background text-red-400 hover:bg-red-500 hover:text-white rounded-full transition-all shadow-md"
+                      className="p-2.5 bg-background text-red-400 hover:bg-red-500 hover:text-white rounded-full transition-all shadow-md cursor-pointer"
                       title="Delete Media"
                     >
                       <Trash2 size={16} />
@@ -284,7 +327,7 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
                     <span>{formatFileSize(item.size)}</span>
                     <button
                       onClick={() => handleCopyUrl(item.id, item.url)}
-                      className="text-accent hover:underline flex items-center gap-1 font-medium"
+                      className="text-accent hover:underline flex items-center gap-1 font-medium cursor-pointer"
                     >
                       {copiedId === item.id ? "Copied!" : "Copy URL"}
                     </button>
