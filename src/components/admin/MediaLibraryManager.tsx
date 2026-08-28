@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Upload, Copy, Check, Trash2, Image as ImageIcon, Link as LinkIcon, ExternalLink, Globe, Layout, BookOpen, User, AlertCircle, Sparkles, FolderKanban } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,10 +9,10 @@ interface MediaItem {
   id: string;
   filename: string;
   url: string;
-  type: string;
-  size: number;
+  type?: string;
+  size?: number;
   category?: string;
-  createdAt: Date | string;
+  createdAt?: Date | string;
 }
 
 export default function MediaLibraryManager({ initialMedia }: { initialMedia: MediaItem[] }) {
@@ -26,6 +26,25 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "NORMAL" | "PROJECT">("all");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync with API on mount to ensure no stale server cache
+  useEffect(() => {
+    async function syncMedia() {
+      try {
+        const res = await fetch("/api/admin/media");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.media && Array.isArray(data.media)) {
+            setMediaList(data.media);
+          }
+        }
+      } catch (err) {
+        console.error("Error syncing media in admin:", err);
+      }
+    }
+
+    syncMedia();
+  }, []);
 
   const handleFileUpload = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -127,7 +146,7 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
     }
   };
 
-  const formatFileSize = (bytes: number) => {
+  const formatFileSize = (bytes?: number) => {
     if (!bytes) return "0 B";
     if (bytes < 1024) return bytes + " B";
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
@@ -193,7 +212,7 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
             }`}
           >
             <Sparkles size={14} />
-            <span>Normal Photo (Shows in Public Card Swipe Gallery)</span>
+            <span>Normal Photo (Public Card Swipe Gallery)</span>
           </button>
 
           <button
@@ -266,7 +285,7 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
             <div>
               <h4 className="font-semibold text-foreground text-sm">Normal Gallery Photos</h4>
               <p className="mt-1">
-                Automatically display in the interactive <strong>Card Swipe Slideshow</strong> section on your public homepage directly below Projects!
+                Automatically display in the interactive <strong>Card Swipe Slideshow</strong> section on your public homepage directly below Journey!
               </p>
             </div>
           </div>
@@ -333,6 +352,8 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
           ) : (
             filteredMedia.map((item) => {
               const isNormalCategory = (item.category || "NORMAL") === "NORMAL";
+              const isImage = item.url.startsWith("data:") || item.url.startsWith("http") || item.url.startsWith("/") || (item.type && item.type.startsWith("image/"));
+
               return (
                 <motion.div
                   key={item.id}
@@ -342,7 +363,7 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
                   className="group relative bg-surface border border-border-color rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between"
                 >
                   <div className="relative aspect-square w-full bg-background/50 flex items-center justify-center overflow-hidden">
-                    {item.type && item.type.startsWith("image/") ? (
+                    {isImage ? (
                       <Image
                         src={item.url}
                         alt={item.filename || "Uploaded media"}
