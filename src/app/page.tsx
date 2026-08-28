@@ -2,6 +2,7 @@ import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
 import Skills from "@/components/sections/Skills";
 import Projects from "@/components/sections/Projects";
+import MediaGallery from "@/components/sections/MediaGallery";
 import CaseStudies from "@/components/sections/CaseStudies";
 import Journey from "@/components/sections/Journey";
 import Achievements from "@/components/sections/Achievements";
@@ -15,6 +16,7 @@ const sectionMap: Record<string, React.FC> = {
   about: About,
   skills: Skills,
   projects: Projects,
+  mediaGallery: MediaGallery,
   caseStudies: CaseStudies,
   journey: Journey,
   achievements: Achievements,
@@ -29,6 +31,7 @@ const defaultSections = [
   { type: "about", enabled: true },
   { type: "skills", enabled: true },
   { type: "projects", enabled: true },
+  { type: "mediaGallery", enabled: true },
   { type: "caseStudies", enabled: true },
   { type: "journey", enabled: true },
   { type: "achievements", enabled: true },
@@ -46,6 +49,16 @@ export default async function Home() {
     });
     
     if (dbSections.length > 0) {
+      // Check if mediaGallery is missing in existing DB sections, if so append it after projects
+      const hasMediaGallery = dbSections.some((s) => s.type === "mediaGallery");
+      if (!hasMediaGallery) {
+        const projectsIndex = dbSections.findIndex((s) => s.type === "projects");
+        if (projectsIndex !== -1) {
+          dbSections.splice(projectsIndex + 1, 0, { id: "media-gallery-section", type: "mediaGallery", title: "Media Gallery", subtitle: null, order: projectsIndex + 1, enabled: true });
+        } else {
+          dbSections.push({ id: "media-gallery-section", type: "mediaGallery", title: "Media Gallery", subtitle: null, order: 99, enabled: true });
+        }
+      }
       sections = dbSections;
     } else {
       sections = defaultSections;

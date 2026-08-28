@@ -22,11 +22,39 @@ export async function GET() {
   }
 }
 
+// PATCH: Update media category (NORMAL vs PROJECT)
+export async function PATCH(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session && process.env.NODE_ENV === "production") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id, category } = await req.json();
+    if (!id || !category) {
+      return NextResponse.json({ error: "Missing id or category" }, { status: 400 });
+    }
+
+    const updated = await prisma.media.update({
+      where: { id },
+      data: { category: category === "PROJECT" ? "PROJECT" : "NORMAL" },
+    });
+
+    revalidatePath("/sk-portal-secret-994/media", "page");
+    revalidatePath("/", "page");
+
+    return NextResponse.json({ success: true, media: updated });
+  } catch (error: any) {
+    console.error("Error updating media category:", error);
+    return NextResponse.json({ error: "Failed to update media category" }, { status: 500 });
+  }
+}
+
 // DELETE: Remove media item and local file
 export async function DELETE(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) {
+    if (!session && process.env.NODE_ENV === "production") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -55,6 +83,7 @@ export async function DELETE(req: Request) {
     await prisma.media.delete({ where: { id } });
 
     revalidatePath("/sk-portal-secret-994/media", "page");
+    revalidatePath("/", "page");
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

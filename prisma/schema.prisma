@@ -260,6 +260,7 @@ model Media {
   url       String
   type      String
   size      Int
+  category  String   @default("NORMAL") // "NORMAL" for general gallery, "PROJECT" for project related
   alt       String?
   caption   String?
   createdAt DateTime @default(now())

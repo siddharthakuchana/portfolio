@@ -18,6 +18,8 @@ export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
+    const categoryInput = (formData.get("category") as string) || "NORMAL";
+    const category = categoryInput === "PROJECT" ? "PROJECT" : "NORMAL";
     
     if (!file) {
       return NextResponse.json({ error: "No file provided in request" }, { status: 400 });
@@ -47,7 +49,6 @@ export async function POST(req: Request) {
       finalUrl = `/uploads/${filename}`;
     } catch (fsErr) {
       console.warn("Local filesystem write disabled or failed (serverless environment). Using Base64 Data URL fallback.", fsErr);
-      // Fallback to dataUrl when filesystem is read-only like Vercel /var/task
       finalUrl = dataUrl;
     }
 
@@ -61,6 +62,7 @@ export async function POST(req: Request) {
           url: finalUrl,
           type: mimeType,
           size: file.size,
+          category,
         },
       });
     } catch (dbErr) {
@@ -71,6 +73,7 @@ export async function POST(req: Request) {
         url: finalUrl,
         type: mimeType,
         size: file.size,
+        category,
         createdAt: new Date().toISOString(),
       };
     }

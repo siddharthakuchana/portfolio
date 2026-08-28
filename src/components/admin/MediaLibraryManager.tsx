@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { Upload, Copy, Check, Trash2, Image as ImageIcon, Link as LinkIcon, ExternalLink, Globe, Layout, BookOpen, User, AlertCircle } from "lucide-react";
+import { Upload, Copy, Check, Trash2, Image as ImageIcon, Link as LinkIcon, ExternalLink, Globe, Layout, BookOpen, User, AlertCircle, Sparkles, FolderKanban } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface MediaItem {
@@ -11,18 +11,20 @@ interface MediaItem {
   url: string;
   type: string;
   size: number;
+  category?: string;
   createdAt: Date | string;
 }
 
 export default function MediaLibraryManager({ initialMedia }: { initialMedia: MediaItem[] }) {
   const [mediaList, setMediaList] = useState<MediaItem[]>(initialMedia);
+  const [selectedCategory, setSelectedCategory] = useState<"NORMAL" | "PROJECT">("NORMAL");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
-  const [filter, setFilter] = useState<"all" | "images">("all");
+  const [filter, setFilter] = useState<"all" | "NORMAL" | "PROJECT">("all");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (files: FileList | null) => {
@@ -38,6 +40,7 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
       const file = files[i];
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("category", selectedCategory);
 
       try {
         const res = await fetch("/api/upload", {
@@ -60,8 +63,12 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
     }
 
     if (uploadedCount > 0) {
-      setSuccessMessage(`Successfully uploaded ${uploadedCount} photo(s)!`);
-      setTimeout(() => setSuccessMessage(""), 4000);
+      setSuccessMessage(
+        `Successfully uploaded ${uploadedCount} photo(s) as ${
+          selectedCategory === "NORMAL" ? "Normal Gallery Photos" : "Project Photos"
+        }!`
+      );
+      setTimeout(() => setSuccessMessage(""), 5000);
     }
 
     setIsUploading(false);
@@ -69,6 +76,25 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
 
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
+    }
+  };
+
+  const handleCategoryToggle = async (id: string, currentCategory?: string) => {
+    const newCategory = currentCategory === "PROJECT" ? "NORMAL" : "PROJECT";
+    try {
+      const res = await fetch("/api/admin/media", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, category: newCategory }),
+      });
+
+      if (res.ok) {
+        setMediaList((prev) =>
+          prev.map((item) => (item.id === id ? { ...item, category: newCategory } : item))
+        );
+      }
+    } catch (err) {
+      console.error("Category update failed:", err);
     }
   };
 
@@ -109,7 +135,8 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
   };
 
   const filteredMedia = mediaList.filter((item) => {
-    if (filter === "images") return item.type && item.type.startsWith("image/");
+    if (filter === "NORMAL") return (item.category || "NORMAL") === "NORMAL";
+    if (filter === "PROJECT") return item.category === "PROJECT";
     return true;
   });
 
@@ -120,10 +147,10 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <ImageIcon className="text-accent" size={26} />
-            Media Library
+            Media Library & Photo Manager
           </h1>
           <p className="text-text-muted text-sm mt-1">
-            Upload photos, project covers, and assets. Copy image URLs to use across your portfolio.
+            Upload and categorize photos as <strong>Normal (Public Card Swipe Gallery)</strong> or <strong>Project Related</strong>.
           </p>
         </div>
 
@@ -141,6 +168,47 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
             disabled={isUploading}
           />
         </label>
+      </div>
+
+      {/* Upload Category Selection Card */}
+      <div className="bg-surface border border-border-color rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">
+            <Sparkles size={16} className="text-accent" />
+            Upload Category Setting
+          </h3>
+          <p className="text-xs text-text-muted mt-1">
+            Choose how your newly uploaded photos will be categorized:
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setSelectedCategory("NORMAL")}
+            className={`px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer border ${
+              selectedCategory === "NORMAL"
+                ? "bg-accent/15 border-accent text-accent shadow-sm"
+                : "bg-background border-border-color text-text-muted hover:text-foreground"
+            }`}
+          >
+            <Sparkles size={14} />
+            <span>Normal Photo (Shows in Public Card Swipe Gallery)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSelectedCategory("PROJECT")}
+            className={`px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer border ${
+              selectedCategory === "PROJECT"
+                ? "bg-purple-500/15 border-purple-500 text-purple-400 shadow-sm"
+                : "bg-background border-border-color text-text-muted hover:text-foreground"
+            }`}
+          >
+            <FolderKanban size={14} />
+            <span>Project Related Photo</span>
+          </button>
+        </div>
       </div>
 
       {/* Status Notifications */}
@@ -174,7 +242,9 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
           </div>
           <div>
             <p className="font-semibold text-foreground">Drag and drop photos here, or click to browse</p>
-            <p className="text-xs text-text-muted mt-1">Supports PNG, JPG, WebP, SVG & PDF (Max 10MB per file)</p>
+            <p className="text-xs text-text-muted mt-1">
+              Will upload as: <strong className="text-accent">{selectedCategory === "NORMAL" ? "Normal Public Gallery Photo" : "Project Photo"}</strong>
+            </p>
           </div>
           {isUploading && (
             <div className="text-sm font-medium text-accent animate-pulse">{uploadProgress}</div>
@@ -182,45 +252,33 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
         </div>
       </div>
 
-      {/* Public Side Guide Card */}
+      {/* Public Side Info Banner */}
       <div className="bg-surface border border-border-color rounded-2xl p-6">
-        <h2 className="text-lg font-bold text-foreground flex items-center gap-2 mb-4">
+        <h2 className="text-lg font-bold text-foreground flex items-center gap-2 mb-3">
           <Globe size={20} className="text-accent" />
-          Where Uploaded Photos Appear on the Public Side
+          Public Site Display Behavior
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-text-muted">
           <div className="p-4 bg-background border border-border-color rounded-xl flex items-start gap-3">
-            <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg">
-              <User size={20} />
+            <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg">
+              <Sparkles size={18} />
             </div>
             <div>
-              <h3 className="font-semibold text-sm text-foreground">Profile & Hero Photo</h3>
-              <p className="text-xs text-text-muted mt-1">
-                Copy image URL & paste into <span className="text-accent font-mono">Settings &gt; Profile Image URL</span> to update your public hero banner photo.
+              <h4 className="font-semibold text-foreground text-sm">Normal Gallery Photos</h4>
+              <p className="mt-1">
+                Automatically display in the interactive <strong>Card Swipe Slideshow</strong> section on your public homepage directly below Projects!
               </p>
             </div>
           </div>
 
           <div className="p-4 bg-background border border-border-color rounded-xl flex items-start gap-3">
             <div className="p-2 bg-purple-500/10 text-purple-400 rounded-lg">
-              <Layout size={20} />
+              <FolderKanban size={18} />
             </div>
             <div>
-              <h3 className="font-semibold text-sm text-foreground">Project Cover Images</h3>
-              <p className="text-xs text-text-muted mt-1">
-                Copy image URL & paste into <span className="text-accent font-mono">Projects &gt; Cover Image</span> to display on homepage & `/projects`.
-              </p>
-            </div>
-          </div>
-
-          <div className="p-4 bg-background border border-border-color rounded-xl flex items-start gap-3">
-            <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg">
-              <BookOpen size={20} />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm text-foreground">Blog Post Covers</h3>
-              <p className="text-xs text-text-muted mt-1">
-                Copy image URL & paste into <span className="text-accent font-mono">Blog CMS &gt; Cover Image</span> to display on public `/blog`.
+              <h4 className="font-semibold text-foreground text-sm">Project Related Photos</h4>
+              <p className="mt-1">
+                Tagged specifically for use inside Projects showcase cards and detailed case study markdown.
               </p>
             </div>
           </div>
@@ -238,17 +296,27 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
                 : "bg-surface text-text-muted hover:text-foreground"
             }`}
           >
-            All Files ({mediaList.length})
+            All Photos ({mediaList.length})
           </button>
           <button
-            onClick={() => setFilter("images")}
+            onClick={() => setFilter("NORMAL")}
             className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-              filter === "images"
+              filter === "NORMAL"
                 ? "bg-accent text-background"
                 : "bg-surface text-text-muted hover:text-foreground"
             }`}
           >
-            Images Only ({mediaList.filter((m) => m.type && m.type.startsWith("image/")).length})
+            Public Gallery ({mediaList.filter((m) => (m.category || "NORMAL") === "NORMAL").length})
+          </button>
+          <button
+            onClick={() => setFilter("PROJECT")}
+            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+              filter === "PROJECT"
+                ? "bg-purple-500 text-white"
+                : "bg-surface text-text-muted hover:text-foreground"
+            }`}
+          >
+            Project Photos ({mediaList.filter((m) => m.category === "PROJECT").length})
           </button>
         </div>
       </div>
@@ -259,83 +327,97 @@ export default function MediaLibraryManager({ initialMedia }: { initialMedia: Me
           {filteredMedia.length === 0 ? (
             <div className="col-span-full py-16 text-center text-text-muted bg-surface rounded-2xl border border-border-color">
               <ImageIcon size={40} className="mx-auto mb-3 text-text-muted opacity-40" />
-              <p className="text-sm font-medium">No media uploaded yet.</p>
-              <p className="text-xs mt-1">Upload photos using the button or drop zone above.</p>
+              <p className="text-sm font-medium">No media items found in this category.</p>
+              <p className="text-xs mt-1">Upload photos using the area above.</p>
             </div>
           ) : (
-            filteredMedia.map((item) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="group relative bg-surface border border-border-color rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between"
-              >
-                <div className="relative aspect-square w-full bg-background/50 flex items-center justify-center overflow-hidden">
-                  {item.type && item.type.startsWith("image/") ? (
-                    <Image
-                      src={item.url}
-                      alt={item.filename || "Uploaded media"}
-                      fill
-                      unoptimized
-                      sizes="(max-width: 768px) 50vw, 25vw"
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center p-3 text-center text-text-muted">
-                      <LinkIcon size={24} className="mb-1 text-accent" />
-                      <span className="text-xs truncate max-w-full font-mono">{item.filename}</span>
+            filteredMedia.map((item) => {
+              const isNormalCategory = (item.category || "NORMAL") === "NORMAL";
+              return (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="group relative bg-surface border border-border-color rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between"
+                >
+                  <div className="relative aspect-square w-full bg-background/50 flex items-center justify-center overflow-hidden">
+                    {item.type && item.type.startsWith("image/") ? (
+                      <Image
+                        src={item.url}
+                        alt={item.filename || "Uploaded media"}
+                        fill
+                        unoptimized
+                        sizes="(max-width: 768px) 50vw, 25vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center p-3 text-center text-text-muted">
+                        <LinkIcon size={24} className="mb-1 text-accent" />
+                        <span className="text-xs truncate max-w-full font-mono">{item.filename}</span>
+                      </div>
+                    )}
+
+                    {/* Category Badge */}
+                    <div className="absolute top-2 left-2 z-10">
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-md shadow-sm border ${
+                          isNormalCategory
+                            ? "bg-accent/90 text-background border-accent"
+                            : "bg-purple-600/90 text-white border-purple-400"
+                        }`}
+                      >
+                        {isNormalCategory ? "Gallery" : "Project"}
+                      </span>
                     </div>
-                  )}
 
-                  {/* Hover Overlay Controls */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-xs">
-                    <button
-                      onClick={() => handleCopyUrl(item.id, item.url)}
-                      className="p-2.5 bg-background text-foreground hover:bg-accent hover:text-background rounded-full transition-all shadow-md cursor-pointer"
-                      title="Copy Public URL"
-                    >
-                      {copiedId === item.id ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
-                    </button>
+                    {/* Hover Overlay Controls */}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-xs">
+                      <button
+                        onClick={() => handleCategoryToggle(item.id, item.category)}
+                        className="p-2.5 bg-background text-foreground hover:bg-accent hover:text-background rounded-full transition-all shadow-md cursor-pointer"
+                        title={isNormalCategory ? "Change to Project Photo" : "Change to Normal Gallery Photo"}
+                      >
+                        {isNormalCategory ? <FolderKanban size={16} /> : <Sparkles size={16} />}
+                      </button>
 
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2.5 bg-background text-foreground hover:bg-accent hover:text-background rounded-full transition-all shadow-md cursor-pointer"
-                      title="View Full Image"
-                    >
-                      <ExternalLink size={16} />
-                    </a>
+                      <button
+                        onClick={() => handleCopyUrl(item.id, item.url)}
+                        className="p-2.5 bg-background text-foreground hover:bg-accent hover:text-background rounded-full transition-all shadow-md cursor-pointer"
+                        title="Copy Public URL"
+                      >
+                        {copiedId === item.id ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                      </button>
 
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      disabled={isDeleting === item.id}
-                      className="p-2.5 bg-background text-red-400 hover:bg-red-500 hover:text-white rounded-full transition-all shadow-md cursor-pointer"
-                      title="Delete Media"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        disabled={isDeleting === item.id}
+                        className="p-2.5 bg-background text-red-400 hover:bg-red-500 hover:text-white rounded-full transition-all shadow-md cursor-pointer"
+                        title="Delete Media"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                {/* Footer Info */}
-                <div className="p-3 border-t border-border-color/50 bg-surface">
-                  <p className="text-xs font-semibold text-foreground truncate" title={item.filename}>
-                    {item.filename}
-                  </p>
-                  <div className="flex items-center justify-between text-[11px] text-text-muted mt-1">
-                    <span>{formatFileSize(item.size)}</span>
-                    <button
-                      onClick={() => handleCopyUrl(item.id, item.url)}
-                      className="text-accent hover:underline flex items-center gap-1 font-medium cursor-pointer"
-                    >
-                      {copiedId === item.id ? "Copied!" : "Copy URL"}
-                    </button>
+                  {/* Footer Info */}
+                  <div className="p-3 border-t border-border-color/50 bg-surface">
+                    <p className="text-xs font-semibold text-foreground truncate" title={item.filename}>
+                      {item.filename}
+                    </p>
+                    <div className="flex items-center justify-between text-[11px] text-text-muted mt-1">
+                      <span>{formatFileSize(item.size)}</span>
+                      <button
+                        onClick={() => handleCategoryToggle(item.id, item.category)}
+                        className="text-accent hover:underline text-[10px] font-medium cursor-pointer"
+                      >
+                        {isNormalCategory ? "→ Set Project" : "→ Set Gallery"}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))
+                </motion.div>
+              );
+            })
           )}
         </AnimatePresence>
       </div>
