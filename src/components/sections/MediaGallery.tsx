@@ -207,7 +207,7 @@ export default function MediaGallery() {
                 </span>
               </div>
 
-              {/* Bottom Card Expand Action (Raw Filename Removed) */}
+              {/* Bottom Card Expand Action */}
               <div className="absolute bottom-0 left-0 right-0 p-6 flex items-center justify-between z-20">
                 <span className="text-xs text-white/90 font-medium flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10">
                   <Maximize2 size={14} className="text-accent" />
@@ -267,41 +267,43 @@ export default function MediaGallery() {
         </div>
       </div>
 
-      {/* Expanded Big Card Modal */}
+      {/* Expanded Big Card Modal (Optimized Aspect Ratio & Orientation) */}
       <AnimatePresence>
         {isModalOpen && currentPhoto && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 md:p-8"
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-2xl flex items-center justify-center p-4 md:p-6"
             onClick={() => setIsModalOpen(false)}
           >
             <motion.div
-              initial={{ scale: 0.85, opacity: 0, y: 30 }}
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.85, opacity: 0, y: 30 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-4xl max-h-[85vh] bg-surface border-2 border-accent/40 rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+              className="relative max-w-4xl w-full bg-surface border border-accent/30 rounded-3xl overflow-hidden shadow-2xl flex flex-col p-4 md:p-6"
             >
-              {/* Modal Header Controls */}
-              <div className="p-4 bg-background/80 border-b border-border-color flex items-center justify-between backdrop-blur-md">
-                <span className="text-xs font-bold text-accent uppercase tracking-widest px-3 py-1 bg-accent/10 rounded-full border border-accent/20">
-                  Big Card View • Photo {currentIndex + 1} of {photos.length}
-                </span>
+              {/* Modal Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-border-color/60 mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-accent uppercase tracking-widest px-3 py-1 bg-accent/10 rounded-full border border-accent/20">
+                    Big Card View • Photo {currentIndex + 1} of {photos.length}
+                  </span>
+                </div>
 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handlePrev}
-                    className="p-2 bg-surface hover:bg-accent hover:text-background rounded-full text-foreground border border-border-color transition-colors cursor-pointer"
+                    className="p-2 bg-background hover:bg-accent hover:text-background rounded-full text-foreground border border-border-color transition-colors cursor-pointer"
                     title="Previous Photo"
                   >
                     <ChevronLeft size={18} />
                   </button>
                   <button
                     onClick={handleNext}
-                    className="p-2 bg-surface hover:bg-accent hover:text-background rounded-full text-foreground border border-border-color transition-colors cursor-pointer"
+                    className="p-2 bg-background hover:bg-accent hover:text-background rounded-full text-foreground border border-border-color transition-colors cursor-pointer"
                     title="Next Photo"
                   >
                     <ChevronRight size={18} />
@@ -316,36 +318,36 @@ export default function MediaGallery() {
                 </div>
               </div>
 
-              {/* Modal Large Photo View */}
-              <div className="relative flex-1 w-full min-h-[400px] md:min-h-[550px] bg-black/60 flex items-center justify-center p-4">
-                <Image
+              {/* Modal Uncropped Natural Aspect Image Frame */}
+              <div className="relative w-full flex items-center justify-center bg-black/40 rounded-2xl p-3 overflow-hidden">
+                <img
                   src={currentPhoto.url}
                   alt="Expanded photo view"
-                  fill
-                  unoptimized
-                  priority
-                  className="object-contain"
+                  className="max-h-[70vh] max-w-full w-auto h-auto object-contain rounded-xl shadow-2xl transition-all"
                 />
 
-                {/* Big Card Navigation Arrows Overlay */}
+                {/* Left Navigation Floating Arrow */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handlePrev();
                   }}
-                  className="absolute left-4 p-3 bg-black/50 hover:bg-accent hover:text-background border border-white/20 rounded-full text-white backdrop-blur-md transition-all shadow-xl cursor-pointer"
+                  className="absolute left-3 p-3 bg-black/60 hover:bg-accent hover:text-background border border-white/20 rounded-full text-white backdrop-blur-md transition-all shadow-xl cursor-pointer"
+                  title="Previous Photo"
                 >
-                  <ChevronLeft size={24} />
+                  <ChevronLeft size={22} />
                 </button>
 
+                {/* Right Navigation Floating Arrow */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleNext();
                   }}
-                  className="absolute right-4 p-3 bg-black/50 hover:bg-accent hover:text-background border border-white/20 rounded-full text-white backdrop-blur-md transition-all shadow-xl cursor-pointer"
+                  className="absolute right-3 p-3 bg-black/60 hover:bg-accent hover:text-background border border-white/20 rounded-full text-white backdrop-blur-md transition-all shadow-xl cursor-pointer"
+                  title="Next Photo"
                 >
-                  <ChevronRight size={24} />
+                  <ChevronRight size={22} />
                 </button>
               </div>
             </motion.div>
